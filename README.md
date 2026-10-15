@@ -108,7 +108,7 @@ Full list: [docs/PHASE_2_STATUS.md](docs/PHASE_2_STATUS.md#known-limitations).
 **Requirements:** Node.js LTS, Rust stable (MSVC), [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) ("Desktop development with C++"), WebView2. Step-by-step guide: [docs/SETUP_WINDOWS.md](docs/SETUP_WINDOWS.md).
 
 ```powershell
-git clone https://github.com/YOUR-USERNAME/DocCraft.git
+git clone https://github.com/pushkar-jat/DocCraft.git
 cd DocCraft
 npm install
 npm run tauri dev      # run the app in development mode

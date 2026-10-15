@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>I Built an Offline PDF Toolkit So You Never Have to Upload Your Documents Again</title>
+<!--
+  How to use with Medium:
+  1. Open this file in Chrome or Edge (double-click it).
+  2. Wait until all screenshots have loaded.
+  3. Press Ctrl+A, then Ctrl+C.
+  4. In a new Medium story, click into the title area and press Ctrl+V.
+  Images and links are pasted as real images and clickable links.
+-->
+<style>
+  body { max-width: 760px; margin: 40px auto; padding: 0 20px; font: 18px/1.6 Georgia, serif; color: #222; background: #fff; }
+  h1 { font: 700 2.1em/1.2 system-ui, sans-serif; } h2, h3 { font-family: system-ui, sans-serif; }
+  img { max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 6px; }
+  pre { background: #f4f4f4; padding: 12px 16px; border-radius: 6px; overflow-x: auto; font-size: 15px; }
+  code { font-family: Consolas, monospace; } a { color: #1a73e8; }
+</style>
+</head>
+<body>
+<h1>I Built an Offline PDF Toolkit So You Never Have to Upload Your Documents Again</h1>
+<h3>DocCraft is a free, open-source desktop app that merges, splits, compresses, converts and OCRs your files — entirely on your own computer.</h3>
+<p><img src="https://raw.githubusercontent.com/pushkar-jat/DocCraft/main/docs/screenshots/dashboard.png" alt="DocCraft dashboard showing nine PDF tools"></p>
+<hr>
+<p>Think about the last time you needed to merge two PDFs, shrink a file for an email attachment, or turn a scanned invoice into searchable text. Chances are you searched for &quot;merge PDF online&quot;, dropped your file onto a website, and downloaded the result.</p>
+<p>It works. But look at what you just uploaded: a signed contract, a bank statement, a passport scan, a medical report. All of it went to a server you know nothing about, run by a company whose privacy policy you didn&#39;t read.</p>
+<p>I wanted the convenience of those websites <strong>without handing my documents to anyone</strong>. So I built <strong>DocCraft</strong>: a small desktop app that does the everyday PDF jobs locally, offline, with no account and no tracking.</p>
+<p>It&#39;s free and open source under the MIT license:
+👉 <strong><a href="https://github.com/pushkar-jat/DocCraft">github.com/pushkar-jat/DocCraft</a></strong></p>
+<hr>
+<h2>What DocCraft can do</h2>
+<p>DocCraft has nine tools on one dashboard:</p>
+<ul>
+<li>📎 <strong>Merge PDF</strong>: combine PDFs in the order you choose</li>
+<li>✂️ <strong>Split PDF</strong>: one file per page range, or every N pages</li>
+<li>📄 <strong>Extract pages</strong>: copy pages, in any order (3, 1, 5–8), into a new PDF</li>
+<li>🗜️ <strong>Compress PDF</strong>: three clear presets, with before/after size shown</li>
+<li>🖼️ <strong>Images to PDF</strong>: JPEG/PNG to one PDF; phone-photo rotation respected</li>
+<li>📝 <strong>PDF to Word</strong>: editable DOCX from a text PDF (basic layout)</li>
+<li>📃 <strong>Word to PDF</strong>: DOCX, DOC, ODT, RTF to PDF (uses LibreOffice)</li>
+<li>🔍 <strong>OCR / searchable PDF</strong>: make scans searchable and copyable (uses Tesseract)</li>
+<li>📚 <strong>Batch processing</strong>: compress or convert many files at once</li>
+</ul>
+<p>Every one of these runs on your machine. Unplug your network cable and they still work.</p>
+<hr>
+<h2>A quick tour</h2>
+<h3>Merge: arrange first, then combine</h3>
+<p>Pick your PDFs in the normal Windows file dialog, drag them into order with the up/down arrows, and press <strong>Merge PDFs</strong>. Picking the same file twice? DocCraft notices and skips the duplicate.</p>
+<p><img src="https://raw.githubusercontent.com/pushkar-jat/DocCraft/main/docs/screenshots/merge.png" alt="Merging three PDFs in a chosen order"></p>
+<p>Your original files are never touched, and the output can never overwrite one of them. If you choose an existing file name, Windows asks before replacing it.</p>
+<h3>Split and extract: page ranges that explain themselves</h3>
+<p>Type ranges like <code>1-3, 4-6, 7-10</code> and DocCraft checks them as you type. Overlapping pages, reversed ranges (<code>5-3</code>), pages that don&#39;t exist, stray commas: each gets a plain-English message instead of a cryptic failure.</p>
+<p><img src="https://raw.githubusercontent.com/pushkar-jat/DocCraft/main/docs/screenshots/split.png" alt="Splitting a PDF with custom page ranges"></p>
+<p>Split writes one file per range into a folder you choose. If a file with the same name already exists, DocCraft picks a new name like <code>report_pages_1-3 (2).pdf</code> rather than overwriting it.</p>
+<h3>Compress: see the saving before you save</h3>
+<p>Most &quot;compress PDF&quot; tools just say &quot;done&quot;. DocCraft shows you exactly what happened, and the three presets each map to real, documented behaviour:</p>
+<ul>
+<li><strong>Higher quality (lossless):</strong> cleans up and recompresses the document&#39;s internal structure. Images are untouched.</li>
+<li><strong>Balanced:</strong> also re-encodes photos and downsizes very large images (over 2500 px).</li>
+<li><strong>Smaller file:</strong> converts images to more compact JPEGs, up to 1600 px. Images may look softer.</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/pushkar-jat/DocCraft/main/docs/screenshots/compress.png" alt="Compressing a photo-heavy PDF by 44.5%"></p>
+<p>And if a PDF <em>can&#39;t</em> be made smaller, DocCraft says so and doesn&#39;t offer to save a bigger file. That kind of honesty is rarer than it should be.</p>
+<h3>OCR: turn a scan into searchable text</h3>
+<p>Scanned documents are just pictures of text: you can&#39;t search them or copy from them. The OCR tool renders each page, recognises the text with <a href="https://github.com/tesseract-ocr/tesseract">Tesseract</a>, and saves a PDF that looks identical but contains a hidden text layer you can search and copy.</p>
+<p><img src="https://raw.githubusercontent.com/pushkar-jat/DocCraft/main/docs/screenshots/ocr.png" alt="OCR making a scanned invoice searchable"></p>
+<p>In my tests, a scanned invoice came back with every word and number correct: &quot;INVOICE 4711 … Total amount due: 1,234.56 EUR&quot;.</p>
+<h3>PDF to Word, with honest limits</h3>
+<p>PDF to Word extracts text, paragraphs, headings and page breaks into an editable DOCX. It&#39;s labelled <strong>basic layout</strong> right in the app, because PDFs don&#39;t really contain &quot;paragraphs&quot; or &quot;tables&quot;, and I&#39;d rather tell you upfront than surprise you.</p>
+<p><img src="https://raw.githubusercontent.com/pushkar-jat/DocCraft/main/docs/screenshots/pdf-to-word.png" alt="Converting a PDF to an editable Word document"></p>
+<p>If you give it a scanned PDF, it won&#39;t create an empty Word file and pretend it worked. It tells you the file is probably a scan and suggests running OCR first.</p>
+<h3>Batch: one bad file never stops the rest</h3>
+<p>Need to compress forty PDFs, or convert a folder of Word documents? Add them to the batch queue, pick an output folder, and press start. Files are processed one at a time, each with its own status, and a damaged file fails on its own without affecting the rest.</p>
+<p><img src="https://raw.githubusercontent.com/pushkar-jat/DocCraft/main/docs/screenshots/batch.png" alt="Batch processing with per-file status"></p>
+<p>You can cancel at any point, and retry just the failed items afterwards.</p>
+<hr>
+<h2>How &quot;private&quot; is private?</h2>
+<p>&quot;Offline&quot; is easy to claim, so here is what DocCraft actually does:</p>
+<ul>
+<li><strong>No network code at all.</strong> The app&#39;s security policy only allows connections to the app itself. Even the PDF engine&#39;s helper files (fonts, character maps) ship inside the app instead of loading from the internet.</li>
+<li><strong>It can only see files you pick.</strong> DocCraft has no general access to your disk. It can open exactly the files you choose in a Windows file dialog, and save exactly where you tell it to.</li>
+<li><strong>No accounts, telemetry, analytics or ads.</strong> There&#39;s nothing to sign up for and nothing phoning home.</li>
+<li><strong>Temporary files are cleaned up</strong>, even when you cancel halfway through.</li>
+</ul>
+<hr>
+<h2>Under the hood (for developers)</h2>
+<p>DocCraft is built with <strong><a href="https://tauri.app">Tauri 2</a></strong> (a Rust core with a lightweight web UI) and <strong>React + TypeScript</strong>. The Windows installer is about <strong>4 MB</strong>.</p>
+<p>A few design decisions I&#39;m happy with:</p>
+<ul>
+<li><strong>Heavy work never freezes the window.</strong> PDF manipulation with <a href="https://pdf-lib.js.org">pdf-lib</a> runs in a Web Worker; text extraction and page rendering use Mozilla&#39;s <a href="https://mozilla.github.io/pdf.js/">pdf.js</a>; compression runs natively in Rust with <a href="https://github.com/J-F-Liu/lopdf">lopdf</a> and the <a href="https://github.com/image-rs/image">image</a> crate.</li>
+<li><strong>Rust commands take bytes, not file paths.</strong> The UI reads the file you picked and sends its contents. The native side never gets a path it could misuse.</li>
+<li><strong>External engines are run carefully.</strong> Word to PDF uses a locally installed LibreOffice and OCR uses Tesseract. Both run without a shell, on a temporary copy with a fixed name, with a timeout and a cancel button that stops the whole process.</li>
+<li><strong>Honest progress bars.</strong> If an engine can report real progress (pages, images, files), you see a percentage. If it can&#39;t, you see an indeterminate bar, not an invented number.</li>
+<li><strong>Every flow was tested end to end.</strong> Besides 118 frontend tests and 22 Rust tests (including real LibreOffice and Tesseract runs), each tool was driven through the real app and real Windows dialogs, and the output files were checked independently.</li>
+</ul>
+<p>The repository includes an <a href="https://github.com/pushkar-jat/DocCraft/blob/main/docs/ARCHITECTURE.md">architecture guide</a> with diagrams and a <a href="https://github.com/pushkar-jat/DocCraft/blob/main/docs/DESIGN.md">design guide</a> that explains how to add a new tool.</p>
+<hr>
+<h2>What it doesn&#39;t do (yet)</h2>
+<p>I&#39;d rather be upfront:</p>
+<ul>
+<li><strong>PDF to Word</strong> doesn&#39;t reproduce images, tables or multi-column layouts yet.</li>
+<li><strong>Compression</strong> helps most with photo-heavy PDFs. Already-optimized files and some scans may not shrink.</li>
+<li><strong>Password-protected PDFs</strong> aren&#39;t supported yet.</li>
+<li>It&#39;s <strong>Windows-only</strong> for now. macOS and Linux builds are planned.</li>
+</ul>
+<hr>
+<h2>Try it</h2>
+<ol>
+<li>Go to the <strong><a href="https://github.com/pushkar-jat/DocCraft/releases">Releases page</a></strong> and download <code>DocCraft_&lt;version&gt;_x64-setup.exe</code>.</li>
+<li>Run it. The app isn&#39;t code-signed yet, so Windows may show <em>&quot;Windows protected your PC&quot;</em>: click <strong>More info → Run anyway</strong>.</li>
+<li>Open <strong>DocCraft</strong> from the Start menu.</li>
+</ol>
+<p>Word to PDF and OCR need two free programs, which you install once (DocCraft finds them automatically):</p>
+<pre><code>winget install TheDocumentFoundation.LibreOffice
+winget install UB-Mannheim.TesseractOCR
+</code></pre>
+<p>Everything else works out of the box.</p>
+<hr>
+<h2>Help make it better</h2>
+<p>DocCraft is open source under the MIT license, and contributions are welcome: bug reports, feature ideas, or code.</p>
+<ul>
+<li>⭐ <strong>Star the repo</strong> if you find it useful: <a href="https://github.com/pushkar-jat/DocCraft">github.com/pushkar-jat/DocCraft</a></li>
+<li>🐛 <strong>Report issues</strong> (please don&#39;t attach confidential documents)</li>
+<li>🛠️ <strong>Contribute</strong>: start with the <a href="https://github.com/pushkar-jat/DocCraft/blob/main/CONTRIBUTING.md">contributing guide</a></li>
+</ul>
+<p>Your documents are yours. Your PDF tools should respect that.</p>
+<hr>
+<p><em>Tags: PDF, Privacy, Open Source, Rust, Tauri</em></p>
+</body>
+</html>
