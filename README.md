@@ -13,6 +13,10 @@ Merge, split, compress, convert and OCR your documents: no uploads, no account, 
 ![License: MIT](https://img.shields.io/badge/license-MIT-blue)
 ![Status: early](https://img.shields.io/badge/status-early%20release-orange)
 
+<a href="https://github.com/pushkar-jat/DocCraft/releases/latest/download/DocCraft_x64-setup.exe"><img src="https://img.shields.io/badge/Download_for_Windows-DocCraft_x64--setup.exe-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="Download DocCraft for Windows"></a>
+
+<sub>Windows 10/11, 64-bit · about 4 MB · <a href="https://github.com/pushkar-jat/DocCraft/releases">all releases</a></sub>
+
 <img src="docs/screenshots/dashboard.png" width="820" alt="DocCraft dashboard with nine PDF tools">
 
 </div>
@@ -73,7 +77,7 @@ Details: [docs/ARCHITECTURE.md → Security boundaries](docs/ARCHITECTURE.md#sec
 
 ### Download (Windows 10/11, 64-bit)
 
-1. Download **`DocCraft_<version>_x64-setup.exe`** from the [Releases](../../releases) page.
+1. **[⬇ Download DocCraft_x64-setup.exe](https://github.com/pushkar-jat/DocCraft/releases/latest/download/DocCraft_x64-setup.exe)** (always the latest version). Older versions are on the [Releases](https://github.com/pushkar-jat/DocCraft/releases) page.
 2. Run it. Because DocCraft is not code-signed yet, Windows SmartScreen may show *"Windows protected your PC"*: click **More info → Run anyway**.
 3. Start **DocCraft** from the Start menu.
 

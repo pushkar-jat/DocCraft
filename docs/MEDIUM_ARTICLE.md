@@ -131,7 +131,7 @@ I'd rather be upfront:
 
 ## Try it
 
-1. Go to the **[Releases page](https://github.com/pushkar-jat/DocCraft/releases)** and download `DocCraft_<version>_x64-setup.exe`.
+1. **[Download DocCraft for Windows](https://github.com/pushkar-jat/DocCraft/releases/latest/download/DocCraft_x64-setup.exe)** (about 4 MB, always the latest version).
 2. Run it. The app isn't code-signed yet, so Windows may show *"Windows protected your PC"*: click **More info → Run anyway**.
 3. Open **DocCraft** from the Start menu.
 
