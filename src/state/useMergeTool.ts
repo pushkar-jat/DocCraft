@@ -1,6 +1,8 @@
 import { useCallback, useReducer, useRef } from "react";
-import { describeError, MergeCancelledError } from "../lib/errors";
+import { describeError, CancelledError } from "../lib/errors";
 import { mergeBlocker, suggestOutputPath } from "../lib/selection";
+import { runMergeWorkflow } from "../lib/workflow";
+import { mergeInWorker } from "../services/pdfWorkerClient";
 import { pickOutputPath, pickPdfFiles, tauriFileAccess } from "../services/tauriFiles";
 import { initialMergeState, isBusy, mergeReducer } from "./mergeState";
 
@@ -45,15 +47,15 @@ export function useMergeTool() {
       const controller = new AbortController();
       abortRef.current = controller;
       dispatch({ type: "merge-started" });
-      // pdf-lib is large; load it only when a merge actually runs.
-      const { runMergeWorkflow } = await import("../lib/workflow");
+      // pdf-lib runs in a Web Worker so the window stays responsive; Cancel terminates it.
       const result = await runMergeWorkflow(inputPaths, outputPath, tauriFileAccess, {
+        merge: mergeInWorker,
         signal: controller.signal,
         onProgress: (progress) => dispatch({ type: "merge-progress", progress }),
       });
       dispatch({ type: "merge-succeeded", ...result });
     } catch (error) {
-      if (error instanceof MergeCancelledError) {
+      if (error instanceof CancelledError) {
         dispatch({ type: "merge-cancelled", message: error.message });
       } else {
         dispatch({ type: "merge-failed", message: describeError(error) });

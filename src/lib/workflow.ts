@@ -1,5 +1,5 @@
-import { MergeError, throwIfCancelled } from "./errors";
-import { mergePdfs, type MergeProgress, type PdfInput } from "./merge";
+import { DocError, throwIfCancelled } from "./errors";
+import type { MergeOptions, MergeProgress, MergeResult, PdfInput } from "./merge";
 import { fileNameFromPath } from "./paths";
 import { validateOutputPath } from "./selection";
 
@@ -13,7 +13,11 @@ export interface FileAccess {
   writeFile(path: string, bytes: Uint8Array): Promise<void>;
 }
 
+export type MergeFunction = (inputs: PdfInput[], options: MergeOptions) => Promise<MergeResult>;
+
 export interface WorkflowOptions {
+  /** The merge implementation: `mergePdfs` directly (tests) or a Web Worker wrapper (app). */
+  merge: MergeFunction;
   signal?: AbortSignal;
   onProgress?: (progress: MergeProgress) => void;
 }
@@ -37,13 +41,13 @@ export async function runMergeWorkflow(
   inputPaths: readonly string[],
   outputPath: string,
   files: FileAccess,
-  options: WorkflowOptions = {},
+  options: WorkflowOptions,
 ): Promise<WorkflowResult> {
-  const { signal, onProgress } = options;
+  const { merge, signal, onProgress } = options;
 
   const outputProblem = validateOutputPath(outputPath, inputPaths);
   if (outputProblem !== null) {
-    throw new MergeError("invalid-output", outputProblem);
+    throw new DocError("invalid-output", outputProblem);
   }
 
   let totalBytes = 0;
@@ -57,11 +61,11 @@ export async function runMergeWorkflow(
     try {
       size = await files.fileSize(path);
     } catch {
-      throw new MergeError("read-failed", `"${name}" could not be opened. It may have been moved, deleted or locked.`, name);
+      throw new DocError("read-failed", `"${name}" could not be opened. It may have been moved, deleted or locked.`, name);
     }
     totalBytes += size;
     if (totalBytes > MAX_TOTAL_INPUT_BYTES) {
-      throw new MergeError(
+      throw new DocError(
         "too-large",
         `The selected files are larger than ${formatMegabytes(MAX_TOTAL_INPUT_BYTES)} in total, which DocCraft cannot merge safely yet. Merge fewer or smaller files.`,
         name,
@@ -71,11 +75,11 @@ export async function runMergeWorkflow(
     try {
       inputs.push({ name, bytes: await files.readFile(path) });
     } catch {
-      throw new MergeError("read-failed", `"${name}" could not be read. It may have been moved, deleted or locked.`, name);
+      throw new DocError("read-failed", `"${name}" could not be read. It may have been moved, deleted or locked.`, name);
     }
   }
 
-  const merged = await mergePdfs(inputs, { signal, onProgress });
+  const merged = await merge(inputs, { signal, onProgress });
 
   // Last point at which cancelling is honoured: after this the write has started.
   throwIfCancelled(signal);
@@ -83,7 +87,7 @@ export async function runMergeWorkflow(
   try {
     await files.writeFile(outputPath, merged.bytes);
   } catch {
-    throw new MergeError(
+    throw new DocError(
       "write-failed",
       `"${outputName}" could not be saved. Check that the folder exists, you have permission to write there, and the file is not open in another program.`,
       outputName,

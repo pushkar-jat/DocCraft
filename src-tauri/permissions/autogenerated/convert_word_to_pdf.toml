@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-convert-word-to-pdf"
+description = "Enables the convert_word_to_pdf command without any pre-configured scope."
+commands.allow = ["convert_word_to_pdf"]
+
+[[permission]]
+identifier = "deny-convert-word-to-pdf"
+description = "Denies the convert_word_to_pdf command without any pre-configured scope."
+commands.deny = ["convert_word_to_pdf"]

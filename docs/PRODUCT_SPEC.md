@@ -19,7 +19,9 @@ People who frequently merge, convert, compress, or organize documents and prefer
 5. **Cross-platform direction:** Windows first; avoid unnecessary Windows-only business logic.
 6. **Honest capability claims:** only advertise implemented and tested features as available.
 
-## Planned roadmap (not all in Phase 1)
+## Roadmap
+
+> **Scope change (2026-10-15):** Phase 2 was expanded by the product owner to the complete core toolkit: merge hardening, split/extract, compression, Word ↔ PDF, images to PDF, batch processing and local OCR (see `docs/CLAUDE_CODE_PHASE_2_PROMPT.md`). The original phases 2–5 below are kept for reference; their core features are now implemented, and `docs/PHASE_2_STATUS.md` tracks what is verified. Remaining roadmap items are the "Later" list at the end.
 
 ### Phase 1 — Foundation and PDF merge
 - Desktop shell and project structure.
@@ -48,6 +50,13 @@ People who frequently merge, convert, compress, or organize documents and prefer
 - Local OCR and searchable PDFs.
 - Batch processing and job summaries.
 - Performance, accessibility, localization, installer polish.
+
+### Later (not yet implemented)
+- Rotate pages; page thumbnails and visual page picking.
+- PDF to Word with images, tables and multi-column layout.
+- Password-protected PDF support (prompt for a password and decrypt locally).
+- Optional bundled engines (Tesseract, possibly LibreOffice) for a single-download install.
+- Localization, installer polish, signed releases, macOS/Linux builds.
 
 ## Non-goals for MVP
 

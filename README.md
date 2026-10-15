@@ -1,114 +1,152 @@
+<div align="center">
+
+<img src="src-tauri/icons/128x128.png" width="96" alt="DocCraft logo">
+
 # DocCraft
 
-**Status:** Phase 1 implemented; desktop build pending verification (see `docs/PHASE_1_STATUS.md`)
-**Working name:** DocCraft (not yet checked for trademark or naming conflicts)
-**Initial platform:** Windows x64 · **Future platforms:** macOS and Linux
-**Product direction:** Lightweight, offline-first desktop document tools.
+**Everyday PDF tools that run entirely on your computer.**
+Merge, split, compress, convert and OCR your documents: no uploads, no account, no tracking.
 
-DocCraft is a Tauri 2 + React + TypeScript desktop app. Phase 1 has one real feature: **merge two or more local PDF files into a new PDF**. Documents are processed on your computer and are never uploaded. There is no account, telemetry, analytics or cloud sync.
+![Platform: Windows](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D6)
+![Built with Tauri 2](https://img.shields.io/badge/built%20with-Tauri%202-24C8DB)
+![Works offline](https://img.shields.io/badge/works-offline-2ea44f)
+![License: MIT](https://img.shields.io/badge/license-MIT-blue)
+![Status: early](https://img.shields.io/badge/status-early%20release-orange)
 
-## Features (Phase 1)
+<img src="docs/screenshots/dashboard.png" width="820" alt="DocCraft dashboard with nine PDF tools">
 
-- Dashboard with a Merge PDF tool. Later tools are listed as "Not available yet" and are not clickable.
-- Native multi-file picker restricted to `.pdf`. Files can be added in several batches.
-- Readable file list; duplicates are skipped with a notice; move up/down and remove buttons.
-- Merge is disabled with an explanation until at least two PDFs are selected.
-- Native save dialog for the output (suggests `merged.pdf` next to the first input).
-- Pages are merged in the displayed order; source files are only read, never written.
-- Refuses to write over any of the input files; Windows asks before replacing any other existing file.
-- Progress (reading → merging → writing), Cancel, success and error messages with accessible live regions.
-- Helpful errors for non-PDF, damaged, truncated, encrypted, page-less, unreadable or too-large inputs, and for failed writes.
+</div>
 
-Not in Phase 1: split/extract, compression, images-to-PDF, PDF↔Word, OCR, batch jobs.
+## Why DocCraft?
 
-## Prerequisites
+Online PDF sites are convenient, but they ask you to upload contracts, invoices, IDs and reports to someone else's server. **DocCraft gives you the same everyday tools as a small desktop app that keeps every file on your device.** It works without an internet connection, needs no sign-up, and contains no analytics.
 
-- Windows 10/11, 64-bit
-- Git
-- Node.js LTS and npm
-- Rust stable MSVC toolchain (`rustup default stable-msvc`)
-- **Microsoft C++ Build Tools** with *Desktop development with C++* (required to compile Rust on Windows)
-- Microsoft Edge WebView2 Runtime (preinstalled on most systems)
+## Features
 
-Step-by-step instructions: `docs/SETUP_WINDOWS.md`.
+| | Tool | What it does |
+|---|---|---|
+| 📎 | **Merge PDF** | Combine PDFs in the order you choose |
+| ✂️ | **Split PDF** | One file per page range, or every N pages |
+| 📄 | **Extract pages** | Copy pages, in any order (`3, 1, 5-8`), into a new PDF |
+| 🗜️ | **Compress PDF** | Three clear presets, with before/after size shown |
+| 🖼️ | **Images to PDF** | JPEG/PNG to one PDF; phone-photo rotation respected |
+| 📝 | **PDF to Word** | Editable DOCX from a text PDF *(basic layout)* |
+| 📃 | **Word to PDF** | DOCX, DOC, ODT, RTF to PDF *(uses LibreOffice)* |
+| 🔍 | **OCR / searchable PDF** | Make scans searchable and copyable *(uses Tesseract)* |
+| 📚 | **Batch processing** | Compress or convert many files at once |
 
-## Setup
+Built to be trustworthy:
+- **Originals are never changed.** Outputs can never replace an input, and Windows asks before replacing any other file.
+- **Honest results.** If a PDF can't be made smaller, DocCraft says so instead of saving a bigger file. Limits like "basic layout" are shown next to the button.
+- **Cancel anything.** Cancelling stops the work immediately and leaves nothing behind.
+- **Accessible.** Keyboard-operable, screen-reader-friendly status messages, light and dark themes.
+
+## Screenshots
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/merge.png" alt="Merge PDF: three files in order and a success message"><br><sub><b>Merge</b>: arrange files, then merge in that order</sub></td>
+    <td width="50%"><img src="docs/screenshots/split.png" alt="Split PDF with custom page ranges"><br><sub><b>Split</b>: page ranges validated as you type</sub></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/compress.png" alt="Compress PDF showing a 44.5% reduction"><br><sub><b>Compress</b>: see the saving before you save</sub></td>
+    <td><img src="docs/screenshots/ocr.png" alt="OCR creating a searchable PDF from a scan"><br><sub><b>OCR</b>: scanned invoice turned into searchable text</sub></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/pdf-to-word.png" alt="PDF to Word conversion result"><br><sub><b>PDF to Word</b>: editable text, honest about layout</sub></td>
+    <td><img src="docs/screenshots/batch.png" alt="Batch processing with per-file status"><br><sub><b>Batch</b>: one bad file never stops the rest</sub></td>
+  </tr>
+</table>
+
+## Privacy
+
+- All processing happens on your device: in the app itself, or in LibreOffice/Tesseract running locally.
+- DocCraft contains **no network code**, and its security policy blocks connections to anything except the app itself.
+- The app can only open files you pick in a Windows file dialog, and only save where you choose.
+- No accounts, telemetry, analytics, ads or cloud features.
+
+Details: [docs/ARCHITECTURE.md → Security boundaries](docs/ARCHITECTURE.md#security-boundaries).
+
+---
+
+## Installation
+
+### Download (Windows 10/11, 64-bit)
+
+1. Download **`DocCraft_<version>_x64-setup.exe`** from the [Releases](../../releases) page.
+2. Run it. Because DocCraft is not code-signed yet, Windows SmartScreen may show *"Windows protected your PC"*: click **More info → Run anyway**.
+3. Start **DocCraft** from the Start menu.
+
+An `.msi` package is also provided for managed/IT installs.
+
+### Optional: Word to PDF and OCR
+
+These two tools use free programs that you install once. DocCraft finds them automatically and shows setup help if they are missing.
 
 ```powershell
-cd "D:\Work Profile\Projects\DocCraft"   # or wherever you cloned it
+winget install TheDocumentFoundation.LibreOffice   # Word to PDF
+winget install UB-Mannheim.TesseractOCR            # OCR (English included)
+```
+
+Everything else works without any extra software.
+
+### Uninstall
+
+Settings → Apps → Installed apps → **DocCraft** → Uninstall.
+
+## Known limitations
+
+- **PDF to Word** keeps text, paragraphs, headings and page breaks. Images, tables and columns are not reproduced yet.
+- **Compression** helps most with photo-heavy PDFs; already-optimized or scanned (JBIG2/CCITT) PDFs may not shrink.
+- **Password-protected PDFs** are not supported yet.
+- Windows only for now; macOS and Linux builds are planned.
+
+Full list: [docs/PHASE_2_STATUS.md](docs/PHASE_2_STATUS.md#known-limitations).
+
+## Building from source
+
+**Requirements:** Node.js LTS, Rust stable (MSVC), [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) ("Desktop development with C++"), WebView2. Step-by-step guide: [docs/SETUP_WINDOWS.md](docs/SETUP_WINDOWS.md).
+
+```powershell
+git clone https://github.com/YOUR-USERNAME/DocCraft.git
+cd DocCraft
 npm install
+npm run tauri dev      # run the app in development mode
+npm run tauri build    # build installers → src-tauri/target/release/bundle/{nsis,msi}/
 ```
 
-## Run, test, build
+**Tests and checks**
 
-| Task | Command | Notes |
-|---|---|---|
-| Unit tests | `npm test` | Vitest; pure logic and the real pdf-lib merge, no window needed |
-| Tests in watch mode | `npm run test:watch` | |
-| Type-check + frontend build | `npm run build` | Output in `dist/` |
-| Launch the desktop app (dev) | `npm run tauri dev` | First run compiles Rust and takes several minutes |
-| Windows production build | `npm run tauri build` | Installers in `src-tauri/target/release/bundle/` (`msi/` and `nsis/`) |
-
-Manual desktop tests: `docs/TEST_PLAN.md`. Record the results in `docs/PHASE_1_STATUS.md`.
-
-## How it works
-
-```
-Dashboard ─► Merge view
-  Add PDFs ──► dialog.open (multiple, *.pdf) ──► selected paths (deduplicated, reorderable)
-  Merge PDFs ─► dialog.save ──► validate output ≠ any input, ends in .pdf
-              ─► for each file: fs.stat (size cap) + fs.readFile
-              ─► pdf-lib: check header, load, reject encrypted/empty, copy pages in order
-              ─► fs.writeFile(output)  (only if everything succeeded and not cancelled)
+```powershell
+npm test                          # frontend tests (Vitest)
+npm run typecheck                 # TypeScript (app + tests)
+cd src-tauri; cargo test          # Rust tests (LibreOffice/Tesseract tests skip if not installed)
+cargo clippy --all-targets        # lint
 ```
 
-Project layout:
+## Tech stack
 
-```
-src/
-  App.tsx, App.css            app shell and styles (light/dark, system fonts only)
-  components/                 Dashboard, MergeView, FileList, MergeStatus, Icons
-  state/mergeState.ts         pure reducer for the merge screen (tested)
-  state/useMergeTool.ts       React hook wiring dialogs, workflow, cancel
-  lib/paths.ts                filename extraction, path comparison (tested)
-  lib/selection.ts            add/dedupe/remove/move, validation (tested)
-  lib/merge.ts                pdf-lib merge core with cancellation (tested)
-  lib/workflow.ts             read → merge → write orchestration (tested with a fake fs)
-  services/tauriFiles.ts      the only module that touches Tauri dialog/fs APIs
-src-tauri/
-  capabilities/default.json   least-privilege permissions
-  tauri.conf.json             window, CSP, bundle config
-docs/                         spec, acceptance criteria, test plan, status, dependencies
-```
+[Tauri 2](https://tauri.app) (Rust) · React 19 + TypeScript · [pdf-lib](https://pdf-lib.js.org) · [pdf.js](https://mozilla.github.io/pdf.js/) · [lopdf](https://github.com/J-F-Liu/lopdf) · [image](https://github.com/image-rs/image) · [fflate](https://github.com/101arrowz/fflate) · optional [LibreOffice](https://www.libreoffice.org) and [Tesseract](https://github.com/tesseract-ocr/tesseract) · Vitest
 
-## Security and privacy model
+## Documentation
 
-- **No network:** no network code is used. The production CSP restricts connections to the app itself and Tauri IPC (`connect-src 'self' ipc: http://ipc.localhost`), and loads no remote scripts, fonts or images.
-- **Least-privilege file access:** the main window may only use `dialog:allow-open`, `dialog:allow-save`, `fs:allow-read-file`, `fs:allow-write-file` and `fs:allow-stat`, with **no static filesystem scope**. The dialog plugin adds each file the user picks to the scope at runtime, so the UI can only read the PDFs the user chose and write the file the user named. This was verified against the plugin source (tauri-plugin-dialog 2.8.3, tauri-plugin-fs 2.7.1).
-- **No custom Rust commands** and no shell execution.
-- **Untrusted input:** file contents are checked for a PDF header and parsed defensively; extensions are only a usability filter.
-- **No sensitive logging:** error messages name files by file name only, never by full path.
+| Document | Contents |
+|---|---|
+| [Architecture](docs/ARCHITECTURE.md) | Components, data flow, file-access model, security boundaries, source map |
+| [Design](docs/DESIGN.md) | UX principles, screen anatomy, job lifecycle, visual tokens, accessibility, adding a tool |
+| [Setup (Windows)](docs/SETUP_WINDOWS.md) | Toolchain, engines, troubleshooting |
+| [Third-party notices](docs/THIRD_PARTY_NOTICES.md) | Licences of every bundled component and the detected engines |
+| [Status](docs/PHASE_2_STATUS.md) · [Test plan](docs/PHASE_2_TEST_PLAN.md) · [Acceptance](docs/PHASE_2_ACCEPTANCE.md) | What is verified, how, and what is still open |
+| [Product spec](docs/PRODUCT_SPEC.md) | Principles and roadmap |
 
-## Dependencies and licenses
+## Contributing
 
-See `docs/DEPENDENCIES.md`, including why `pdf-lib` 1.17.1 was chosen and pinned. DocCraft itself has no license chosen yet.
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) first. DocCraft has a few strict rules (local-only, least privilege, honest features). Changes are tracked in [CHANGELOG.md](CHANGELOG.md).
 
-## Source-of-truth documents
+## License
 
-- `CLAUDE.md`: coding-agent instructions
-- `docs/PRODUCT_SPEC.md`: product principles and roadmap
-- `docs/PHASE_1_ACCEPTANCE.md`: definition of done
-- `docs/PHASE_1_STATUS.md`: current verification status and known limitations
-- `docs/TEST_PLAN.md`: manual and automated tests
-- `docs/SETUP_WINDOWS.md`: Windows setup
-- `docs/CLAUDE_CODE_PHASE_1_PROMPT.md`: the original Phase 1 prompt
+DocCraft is released under the [MIT License](LICENSE). Third-party components keep their own licences: see [docs/THIRD_PARTY_NOTICES.md](docs/THIRD_PARTY_NOTICES.md).
 
-## Safety and quality rules
+---
 
-- Do not run commands that delete files or rewrite large areas without explaining the effect and asking for approval.
-- Do not enable broad filesystem permissions just to make a demo work.
-- Use least-privilege Tauri capabilities.
-- Do not silently overwrite input files.
-- Never claim a test/build passed unless the command was actually run and succeeded.
-- Keep dependencies and their licenses documented before packaging or distributing the app.
-- Do not copy proprietary code or branding from another product.
+<sub>DocCraft is an independent open-source project and is not affiliated with Adobe, Microsoft, The Document Foundation, the Tesseract project or ArtCraft. The name is provisional.</sub>

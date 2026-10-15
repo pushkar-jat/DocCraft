@@ -1,0 +1,41 @@
+# Changelog
+
+All notable changes to DocCraft are listed here. Format based on [Keep a Changelog](https://keepachangelog.com/).
+
+## [Unreleased] — Phase 2: complete offline toolkit
+
+### Added
+- **Split PDF**: every N pages or custom ranges (`1-3, 5, 8-10`), one file per range, written to a chosen folder without overwriting existing files.
+- **Extract pages**: selected pages in the exact order typed (e.g. `3, 1, 2`) into a new PDF.
+- **Compress PDF**: three presets (Higher quality / Balanced / Smaller file) implemented natively in Rust (lopdf + image), with before/after size and percentage. Reports honestly when a file cannot shrink.
+- **Images to PDF**: JPEG/PNG, reorderable, EXIF camera orientation respected, A4 / Letter / image-size pages.
+- **PDF to Word** (basic layout): text, paragraphs, headings and page breaks into DOCX via pdf.js. Scanned PDFs are detected and refused with OCR guidance.
+- **Word to PDF**: DOCX/DOC/ODT/RTF through a locally installed LibreOffice (detected, not bundled), using a private, hardened profile.
+- **OCR / searchable PDF**: scanned PDFs or images through a locally installed Tesseract; pages rendered locally at 300 dpi.
+- **Batch processing**: compress, Word to PDF, PDF to Word or OCR on many files, one at a time, with per-file status, cancel, retry and a summary.
+- Engine detection with setup guidance and **Check again** when LibreOffice/Tesseract is missing.
+- Generic job model with honest progress, cancellation and accessible status for every tool.
+- Documentation: architecture, design, contributing, third-party notices, Phase 2 acceptance/test plan/status.
+
+### Changed
+- Merge now runs in a Web Worker; cancel terminates it instantly.
+- Dashboard redesigned as a grid of nine tools.
+- Native commands use raw binary IPC (bytes in, bytes out) and require explicit capability permissions (app manifest).
+- Production CSP now allows `'wasm-unsafe-eval'` so pdf.js can use its bundled WebAssembly image decoders (JavaScript `eval` stays blocked).
+
+### Fixed
+- Cancelling Word to PDF could leave a temporary copy of the document behind; temp folders are now removed on every outcome.
+- The dev server could reload the page mid-job when it discovered worker-only dependencies.
+
+### Security / licensing
+- pdf.js's GPL-licensed Liberation fonts are excluded from the bundle.
+
+## [0.1.0] — Phase 1: foundation and PDF merge
+
+### Added
+- Tauri 2 + React + TypeScript desktop app with a dashboard.
+- Merge two or more PDFs: native multi-file picker, de-duplication, reorder, remove, save dialog, merge in displayed order.
+- Validation and clear errors for invalid, damaged, encrypted, empty and too-large inputs; output can never replace an input.
+- Progress, cancellation, success and error states.
+- Least-privilege capabilities (dialog-scoped file access only) and a strict production CSP.
+- Unit tests for merge logic, Windows installers (MSI and NSIS).

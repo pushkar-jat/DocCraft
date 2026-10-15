@@ -1,5 +1,5 @@
 import { PDFDocument } from "pdf-lib";
-import { MergeError, throwIfCancelled } from "./errors";
+import { DocError, throwIfCancelled } from "./errors";
 import { MIN_FILES_TO_MERGE } from "./selection";
 
 export interface PdfInput {
@@ -43,11 +43,11 @@ export function hasPdfHeader(bytes: Uint8Array): boolean {
 }
 
 /** Lets the UI repaint and register a Cancel click between expensive steps. */
-const yieldToEventLoop = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
+export const yieldToEventLoop = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
 
-async function loadSource(input: PdfInput): Promise<PDFDocument> {
+export async function loadPdf(input: PdfInput): Promise<PDFDocument> {
   if (!hasPdfHeader(input.bytes)) {
-    throw new MergeError("not-pdf", `"${input.name}" is not a valid PDF file.`, input.name);
+    throw new DocError("not-pdf", `"${input.name}" is not a valid PDF file.`, input.name);
   }
   let document: PDFDocument;
   try {
@@ -56,11 +56,11 @@ async function loadSource(input: PdfInput): Promise<PDFDocument> {
     // the in-memory copy's metadata untouched; the source file on disk is never written.
     document = await PDFDocument.load(input.bytes, { ignoreEncryption: true, updateMetadata: false });
   } catch {
-    throw new MergeError("not-pdf", `"${input.name}" is damaged or is not a valid PDF file.`, input.name);
+    throw new DocError("not-pdf", `"${input.name}" is damaged or is not a valid PDF file.`, input.name);
   }
   if (document.isEncrypted) {
     // pdf-lib cannot decrypt, so copying pages would produce unreadable output.
-    throw new MergeError(
+    throw new DocError(
       "encrypted",
       `"${input.name}" is password-protected or encrypted. Remove the protection in a PDF reader you trust, then try again.`,
       input.name,
@@ -76,7 +76,7 @@ async function loadSource(input: PdfInput): Promise<PDFDocument> {
 export async function mergePdfs(inputs: readonly PdfInput[], options: MergeOptions = {}): Promise<MergeResult> {
   const { signal, onProgress } = options;
   if (inputs.length < MIN_FILES_TO_MERGE) {
-    throw new MergeError("not-enough-files", `Select at least ${MIN_FILES_TO_MERGE} PDF files to merge.`);
+    throw new DocError("not-enough-files", `Select at least ${MIN_FILES_TO_MERGE} PDF files to merge.`);
   }
   throwIfCancelled(signal);
 
@@ -89,17 +89,17 @@ export async function mergePdfs(inputs: readonly PdfInput[], options: MergeOptio
     await yieldToEventLoop();
     throwIfCancelled(signal);
 
-    const source = await loadSource(input);
+    const source = await loadPdf(input);
     const pageIndices = source.getPageIndices();
     if (pageIndices.length === 0) {
-      throw new MergeError("empty", `"${input.name}" does not contain any pages.`, input.name);
+      throw new DocError("empty", `"${input.name}" does not contain any pages.`, input.name);
     }
 
     let pages;
     try {
       pages = await output.copyPages(source, pageIndices);
     } catch {
-      throw new MergeError(
+      throw new DocError(
         "unsupported",
         `"${input.name}" uses a PDF structure DocCraft cannot merge yet.`,
         input.name,

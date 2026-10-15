@@ -1,34 +1,55 @@
 import type { ReactNode } from "react";
-import { CompressIcon, ConvertIcon, ImageIcon, LockIcon, MergeIcon, ScanIcon, SplitIcon } from "./Icons";
+import { useEngines } from "../state/EnginesContext";
+import {
+  BatchIcon,
+  CompressIcon,
+  ConvertIcon,
+  ExtractIcon,
+  ImageIcon,
+  LockIcon,
+  MergeIcon,
+  ScanIcon,
+  SplitIcon,
+  WordIcon,
+} from "./Icons";
 
-interface PlannedTool {
+export type ToolId = "merge" | "split" | "extract" | "compress" | "word-to-pdf" | "pdf-to-word" | "images-to-pdf" | "ocr" | "batch";
+
+interface Tool {
+  id: ToolId;
   title: string;
   description: string;
   icon: ReactNode;
+  engine?: "libreOffice" | "tesseract";
 }
 
-// Shown only so users know what is coming. These are not buttons and do nothing.
-const PLANNED_TOOLS: PlannedTool[] = [
-  { title: "Split & extract pages", description: "Pull out page ranges into new PDFs.", icon: <SplitIcon /> },
-  { title: "Compress PDF", description: "Reduce file size with quality controls.", icon: <CompressIcon /> },
-  { title: "Images to PDF", description: "Combine images into one PDF.", icon: <ImageIcon /> },
-  { title: "Word ↔ PDF", description: "Convert between DOCX and PDF locally.", icon: <ConvertIcon /> },
-  { title: "OCR", description: "Make scanned PDFs searchable.", icon: <ScanIcon /> },
+const TOOLS: Tool[] = [
+  { id: "merge", title: "Merge PDF", description: "Combine PDFs into one, in the order you choose.", icon: <MergeIcon /> },
+  { id: "split", title: "Split PDF", description: "Split a PDF into several files by page ranges.", icon: <SplitIcon /> },
+  { id: "extract", title: "Extract pages", description: "Copy selected pages into a new PDF.", icon: <ExtractIcon /> },
+  { id: "compress", title: "Compress PDF", description: "Reduce file size with clear quality presets.", icon: <CompressIcon /> },
+  { id: "images-to-pdf", title: "Images to PDF", description: "Turn JPEG and PNG images into one PDF.", icon: <ImageIcon /> },
+  { id: "pdf-to-word", title: "PDF to Word", description: "Editable DOCX from a text PDF (basic layout).", icon: <WordIcon /> },
+  { id: "word-to-pdf", title: "Word to PDF", description: "DOCX, DOC, ODT or RTF to PDF.", icon: <ConvertIcon />, engine: "libreOffice" },
+  { id: "ocr", title: "OCR / searchable PDF", description: "Recognize text in scans and images.", icon: <ScanIcon />, engine: "tesseract" },
+  { id: "batch", title: "Batch processing", description: "Compress or convert many files in one go.", icon: <BatchIcon /> },
 ];
 
+const ENGINE_NAMES = { libreOffice: "LibreOffice", tesseract: "Tesseract" } as const;
+
 interface DashboardProps {
-  onOpenMerge: () => void;
-  selectedCount: number;
+  onOpen: (tool: ToolId) => void;
+  mergeCount: number;
 }
 
-export function Dashboard({ onOpenMerge, selectedCount }: DashboardProps) {
+export function Dashboard({ onOpen, mergeCount }: DashboardProps) {
+  const { status, checking } = useEngines();
+
   return (
     <div className="dashboard">
       <section className="hero" aria-labelledby="hero-title">
         <h1 id="hero-title">Your PDF tools, on your computer</h1>
-        <p className="hero-text">
-          DocCraft works offline. Your documents are processed on this device and are never uploaded.
-        </p>
+        <p className="hero-text">DocCraft works offline. Your documents are processed on this device and are never uploaded.</p>
         <p className="privacy-pill">
           <LockIcon width={16} height={16} /> Local processing · No account · No tracking
         </p>
@@ -36,37 +57,31 @@ export function Dashboard({ onOpenMerge, selectedCount }: DashboardProps) {
 
       <section aria-labelledby="tools-title">
         <h2 id="tools-title" className="section-title">
-          Available tools
+          Tools
         </h2>
-        <button type="button" className="tool-card tool-card--active" onClick={onOpenMerge}>
-          <span className="tool-icon">
-            <MergeIcon width={26} height={26} />
-          </span>
-          <span className="tool-body">
-            <span className="tool-title">Merge PDF</span>
-            <span className="tool-description">
-              Combine two or more PDF files into one document, in the order you choose.
-            </span>
-          </span>
-          <span className="tool-cta">{selectedCount > 0 ? `Continue (${selectedCount} selected)` : "Open"}</span>
-        </button>
-      </section>
-
-      <section aria-labelledby="planned-title">
-        <h2 id="planned-title" className="section-title">
-          Planned for later versions
-        </h2>
-        <ul className="planned-grid">
-          {PLANNED_TOOLS.map((tool) => (
-            <li key={tool.title} className="planned-card" aria-label={`${tool.title} — not available yet`}>
-              <span className="tool-icon tool-icon--muted">{tool.icon}</span>
-              <span className="tool-body">
-                <span className="tool-title">{tool.title}</span>
-                <span className="tool-description">{tool.description}</span>
-              </span>
-              <span className="badge">Not available yet</span>
-            </li>
-          ))}
+        <ul className="tool-grid">
+          {TOOLS.map((tool) => {
+            const missing = tool.engine !== undefined && !checking && !(status?.[tool.engine].available ?? false);
+            return (
+              <li key={tool.id}>
+                <button type="button" className="tool-tile" onClick={() => onOpen(tool.id)}>
+                  <span className="tool-icon">{tool.icon}</span>
+                  <span className="tool-body">
+                    <span className="tool-title">
+                      {tool.title}
+                      {tool.id === "merge" && mergeCount > 0 && <span className="badge badge--accent">{mergeCount} selected</span>}
+                    </span>
+                    <span className="tool-description">{tool.description}</span>
+                    {tool.engine && (
+                      <span className={`engine-tag ${missing ? "engine-tag--missing" : ""}`}>
+                        {missing ? `Needs ${ENGINE_NAMES[tool.engine]} (not found) — open for setup` : `Uses ${ENGINE_NAMES[tool.engine]} on this computer`}
+                      </span>
+                    )}
+                  </span>
+                </button>
+              </li>
+            );
+          })}
         </ul>
       </section>
     </div>

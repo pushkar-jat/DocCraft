@@ -1,18 +1,18 @@
 import { describe, expect, it } from "vitest";
 import { makeEmptyPdf, makeEncryptedPdf, makePdf, pageWidths, textBytes } from "../test/fixtures";
-import { MergeCancelledError, MergeError } from "./errors";
+import { CancelledError, DocError } from "./errors";
 import { hasPdfHeader, mergePdfs, type MergeProgress } from "./merge";
 
-async function expectMergeError(promise: Promise<unknown>, code: string, fileName?: string) {
+async function expectDocError(promise: Promise<unknown>, code: string, fileName?: string) {
   const error = await promise.then(
     () => null,
     (e: unknown) => e,
   );
-  expect(error).toBeInstanceOf(MergeError);
-  expect((error as MergeError).code).toBe(code);
+  expect(error).toBeInstanceOf(DocError);
+  expect((error as DocError).code).toBe(code);
   if (fileName !== undefined) {
-    expect((error as MergeError).fileName).toBe(fileName);
-    expect((error as MergeError).message).toContain(fileName);
+    expect((error as DocError).fileName).toBe(fileName);
+    expect((error as DocError).message).toContain(fileName);
   }
 }
 
@@ -56,8 +56,8 @@ describe("mergePdfs", () => {
   });
 
   it("requires at least two inputs", async () => {
-    await expectMergeError(mergePdfs([]), "not-enough-files");
-    await expectMergeError(mergePdfs([{ name: "a.pdf", bytes: await makePdf(1, 1) }]), "not-enough-files");
+    await expectDocError(mergePdfs([]), "not-enough-files");
+    await expectDocError(mergePdfs([{ name: "a.pdf", bytes: await makePdf(1, 1) }]), "not-enough-files");
   });
 
   it("rejects a non-PDF file renamed to .pdf", async () => {
@@ -65,7 +65,7 @@ describe("mergePdfs", () => {
       { name: "good.pdf", bytes: await makePdf(1, 1) },
       { name: "renamed.pdf", bytes: textBytes("This is just a text file.") },
     ];
-    await expectMergeError(mergePdfs(inputs), "not-pdf", "renamed.pdf");
+    await expectDocError(mergePdfs(inputs), "not-pdf", "renamed.pdf");
   });
 
   it("rejects a damaged PDF", async () => {
@@ -73,7 +73,7 @@ describe("mergePdfs", () => {
       { name: "good.pdf", bytes: await makePdf(1, 1) },
       { name: "broken.pdf", bytes: textBytes("%PDF-1.7\n1 0 obj << /Type /Catalog") },
     ];
-    await expectMergeError(mergePdfs(inputs), "not-pdf", "broken.pdf");
+    await expectDocError(mergePdfs(inputs), "not-pdf", "broken.pdf");
   });
 
   it("rejects a truncated PDF", async () => {
@@ -82,7 +82,7 @@ describe("mergePdfs", () => {
       { name: "good.pdf", bytes: await makePdf(1, 1) },
       { name: "truncated.pdf", bytes: full.slice(0, 40) },
     ];
-    await expectMergeError(mergePdfs(inputs), "not-pdf", "truncated.pdf");
+    await expectDocError(mergePdfs(inputs), "not-pdf", "truncated.pdf");
   });
 
   it("rejects encrypted PDFs with a helpful message", async () => {
@@ -90,7 +90,7 @@ describe("mergePdfs", () => {
       { name: "good.pdf", bytes: await makePdf(1, 1) },
       { name: "secret.pdf", bytes: await makeEncryptedPdf() },
     ];
-    await expectMergeError(mergePdfs(inputs), "encrypted", "secret.pdf");
+    await expectDocError(mergePdfs(inputs), "encrypted", "secret.pdf");
   });
 
   it("rejects a PDF without pages", async () => {
@@ -98,7 +98,7 @@ describe("mergePdfs", () => {
       { name: "good.pdf", bytes: await makePdf(1, 1) },
       { name: "blank.pdf", bytes: await makeEmptyPdf() },
     ];
-    await expectMergeError(mergePdfs(inputs), "empty", "blank.pdf");
+    await expectDocError(mergePdfs(inputs), "empty", "blank.pdf");
   });
 
   it("stops before doing any work when already cancelled", async () => {
@@ -108,7 +108,7 @@ describe("mergePdfs", () => {
       { name: "a.pdf", bytes: await makePdf(1, 1) },
       { name: "b.pdf", bytes: await makePdf(2, 1) },
     ];
-    await expect(mergePdfs(inputs, { signal: controller.signal })).rejects.toBeInstanceOf(MergeCancelledError);
+    await expect(mergePdfs(inputs, { signal: controller.signal })).rejects.toBeInstanceOf(CancelledError);
   });
 
   it("stops when cancelled part-way through", async () => {
@@ -126,7 +126,7 @@ describe("mergePdfs", () => {
         if (progress.current === 2) controller.abort();
       },
     });
-    await expect(run).rejects.toBeInstanceOf(MergeCancelledError);
+    await expect(run).rejects.toBeInstanceOf(CancelledError);
     expect(seen.some((progress) => progress.stage === "saving")).toBe(false);
   });
 

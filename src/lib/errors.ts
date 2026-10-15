@@ -1,44 +1,64 @@
-export type MergeErrorCode =
+export type ErrorCode =
   | "not-enough-files"
   | "invalid-output"
   | "too-large"
   | "read-failed"
   | "not-pdf"
+  | "not-document"
+  | "invalid-image"
+  | "invalid-range"
   | "encrypted"
   | "unsupported"
   | "empty"
-  | "write-failed";
+  | "no-text"
+  | "engine-missing"
+  | "conversion-failed"
+  | "timeout"
+  | "write-failed"
+  | "internal";
 
 /** An expected, user-explainable failure. `fileName` is a file name only, never a full path. */
-export class MergeError extends Error {
-  readonly code: MergeErrorCode;
+export class DocError extends Error {
+  readonly code: ErrorCode;
   readonly fileName?: string;
 
-  constructor(code: MergeErrorCode, message: string, fileName?: string) {
+  constructor(code: ErrorCode, message: string, fileName?: string) {
     super(message);
-    this.name = "MergeError";
+    this.name = "DocError";
     this.code = code;
     this.fileName = fileName;
   }
 }
 
-export class MergeCancelledError extends Error {
+export class CancelledError extends Error {
   constructor() {
-    super("The merge was cancelled. No output file was written.");
-    this.name = "MergeCancelledError";
+    super("The operation was cancelled. No output file was written.");
+    this.name = "CancelledError";
   }
 }
 
 export function throwIfCancelled(signal?: AbortSignal): void {
   if (signal?.aborted) {
-    throw new MergeCancelledError();
+    throw new CancelledError();
   }
+}
+
+export function isCancelled(error: unknown): boolean {
+  return error instanceof CancelledError;
 }
 
 /** Converts any thrown value to a message that is safe and helpful to show to the user. */
 export function describeError(error: unknown): string {
-  if (error instanceof MergeError || error instanceof MergeCancelledError) {
+  if (error instanceof DocError || error instanceof CancelledError) {
     return error.message;
   }
-  return "Something unexpected went wrong while merging. No output file was written by DocCraft.";
+  return "Something unexpected went wrong. No output file was written.";
+}
+
+/** Prefixes a DocError's message with the file it concerns, if it does not mention it already. */
+export function withFileName(error: unknown, fileName: string): unknown {
+  if (error instanceof DocError && !error.message.includes(fileName)) {
+    return new DocError(error.code, `"${fileName}": ${error.message}`, fileName);
+  }
+  return error;
 }

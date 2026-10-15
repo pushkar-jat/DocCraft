@@ -1,5 +1,7 @@
 # Phase 1 — Status and Verification Report
 
+> **Update 2026-10-15 (later the same day):** the toolchain blocker below was resolved. Windows Installer had Error 1719 because `C:\Windows\SysWOW64\msiexec.exe` was missing; `sfc /scannow` restored it and the Build Tools then installed. `npm run tauri build` passed and the merge workflow was verified end to end in the real app. See `docs/PHASE_2_STATUS.md` (merge was hardened and re-verified in Phase 2). The original report follows unchanged.
+
 Date: 2026-10-15 · Machine: Windows 11 Pro 22621 x64 · Node 24.13.0 · npm 11.12.0 · Rust 1.99.0 (stable-x86_64-pc-windows-msvc)
 
 **Phase 1 is not yet complete.** The code is implemented and its automated tests pass, but the desktop app has not been compiled or launched. This machine has no Microsoft C++ Build Tools (`link.exe` / Windows SDK), so every Rust build fails at the link step. All manual tests are therefore **Not run**.
@@ -15,6 +17,8 @@ Date: 2026-10-15 · Machine: Windows 11 Pro 22621 x64 · Node 24.13.0 · npm 11.
 | `cargo check` (src-tauri) | **Fail** (environment): `linking with link.exe failed … you may need to install Visual Studio build tools with the "C++ build tools" workload` |
 | `npm run tauri dev` | **Not run**. Blocked by the same missing linker |
 | `npm run tauri build` | **Not run**. Blocked by the same missing linker |
+
+Install attempt (2026-10-15): `winget install --id Microsoft.VisualStudio.2022.BuildTools …` failed twice with installer exit code 8012. The Visual Studio pre-check failed because Windows Installer returned **Error 1719** ("The Windows Installer Service could not be accessed"), although the `msiserver` service was running. File operations are pending a reboot. Next step: restart Windows, then retry. If it still fails, re-register Windows Installer from an elevated prompt (`msiexec /unregister`, then `msiexec /regserver`).
 
 To unblock, install the Build Tools (see `docs/SETUP_WINDOWS.md` step 3), reopen the terminal and run:
 

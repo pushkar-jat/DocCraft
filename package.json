@@ -9,18 +9,24 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "predev": "node scripts/copy-pdfjs-assets.mjs",
+    "prebuild": "node scripts/copy-pdfjs-assets.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json"
   },
   "dependencies": {
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-dialog": "^2.8.3",
     "@tauri-apps/plugin-fs": "^2.7.1",
+    "fflate": "0.8.3",
     "pdf-lib": "1.17.1",
+    "pdfjs-dist": "6.4.299",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2",
+    "@types/node": "^24.19.2",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^6.0.2",
@@ -28,5 +34,6 @@
     "vite": "^8.0.16",
     "vitest": "^5.0.4"
   },
-  "description": "Offline-first desktop document utility (Phase 1: PDF merge)"
+  "description": "Offline-first desktop document utility (Phase 1: PDF merge)",
+  "license": "MIT"
 }

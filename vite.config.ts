@@ -31,6 +31,17 @@ export default defineConfig(() => ({
     },
   },
 
+  // Pre-bundle libraries used only from the worker or lazily, so the dev server does not
+  // discover them mid-session and force a page reload (which would drop the app's state).
+  optimizeDeps: {
+    include: ["pdf-lib", "pdfjs-dist", "fflate"],
+  },
+
+  // The PDF worker imports shared modules, so it must be bundled as an ES module.
+  worker: {
+    format: "es" as const,
+  },
+
   // Unit tests cover pure logic only, so they run in Node without a desktop window.
   test: {
     environment: "node",

@@ -115,3 +115,26 @@ export const LockIcon = (props: IconProps) => (
     <path d="M8 11V8a4 4 0 0 1 8 0v3" />
   </Icon>
 );
+
+export const ExtractIcon = (props: IconProps) => (
+  <Icon {...props}>
+    <rect x="4" y="3" width="10" height="14" rx="1.5" />
+    <path d="M10 21h8a2 2 0 0 0 2-2V9" />
+    <path d="M14 13l3 3 3-3M17 16V8" />
+  </Icon>
+);
+
+export const WordIcon = (props: IconProps) => (
+  <Icon {...props}>
+    <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+    <path d="M14 3v5h5" />
+    <path d="M8 12l1.5 5 1.5-4 1.5 4L14 12" />
+  </Icon>
+);
+
+export const BatchIcon = (props: IconProps) => (
+  <Icon {...props}>
+    <path d="M12 3 3 8l9 5 9-5z" />
+    <path d="m3 13 9 5 9-5" />
+  </Icon>
+);

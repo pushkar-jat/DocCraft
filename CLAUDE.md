@@ -63,10 +63,14 @@ Do not implement PDF-to-Word, Word-to-PDF, compression, OCR, split/extract, acco
 
 Follow `docs/PHASE_1_ACCEPTANCE.md` and `docs/TEST_PLAN.md`. Do not claim completion unless the acceptance criteria are checked or the remaining gaps are explicitly listed.
 
-## Project notes (Phase 1 implementation)
+## Project notes (Phases 1–2 implementation)
 
-- Merge runs in the webview with `pdf-lib` (pinned exactly). See `docs/DEPENDENCIES.md` for why.
-- Pure logic lives in `src/lib/` and `src/state/mergeState.ts` and is unit-tested with Vitest (`npm test`).
-- All file I/O goes through `src/services/tauriFiles.ts`. The capability grants no static fs scope; the dialog plugin adds each user-selected file to the scope at runtime.
+Phase 2 (`docs/CLAUDE_CODE_PHASE_2_PROMPT.md`) expanded scope to the full toolkit: merge, split/extract, compress, Word ↔ PDF, images to PDF, batch, OCR. Status: `docs/PHASE_2_STATUS.md`.
+
+- Pure logic lives in `src/lib/` (plus `src/state/mergeState.ts`) and is tested with Vitest (`npm test`; `npm run typecheck` checks app and tests separately, since tests use Node types).
+- pdf-lib work runs in a Web Worker (`src/workers/pdfWorker.ts`, client `src/services/pdfWorkerClient.ts`); cancel = terminate the worker. pdf.js is loaded lazily (`src/services/pdfjs.ts`) with its data files served locally from `public/pdfjs/`, copied by `scripts/copy-pdfjs-assets.mjs` on `predev`/`prebuild`.
+- Rust commands (`src-tauri/src/lib.rs`) are **bytes in, bytes out** over raw IPC (`invoke(cmd, Uint8Array, { headers })`). They never receive user file paths; all file I/O stays in `src/services/tauriFiles.ts` through the dialog-scoped fs plugin. New commands must be added to the app manifest in `src-tauri/build.rs` and allowed in `capabilities/default.json`.
+- External engines (LibreOffice, Tesseract) are detected, not bundled (`engines.rs`), and run via `process.rs`: argument arrays, no shell, timeout, kill-tree on cancel, `with_temp_dir` cleanup on every outcome.
 - `pdf-lib` is compiled to ES5, so `instanceof` checks against its error classes do not work. Inspect document state (e.g. `isEncrypted`) instead.
-- Current status and gaps: `docs/PHASE_1_STATUS.md`.
+- Vite must pre-bundle worker-only/lazy deps (`optimizeDeps.include`), or the dev server reloads the page mid-job.
+- Rust tests that need LibreOffice/Tesseract skip themselves when the engine is absent; run them with `--nocapture` to see whether they skipped.

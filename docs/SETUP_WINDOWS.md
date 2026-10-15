@@ -107,6 +107,19 @@ npm install
 
 Rust crates are downloaded automatically by the first `npm run tauri dev` / `npm run tauri build`.
 
+## 7b. Optional runtime engines (Word to PDF, OCR)
+
+DocCraft does not bundle these. It detects them at start-up and shows setup guidance in the tools that need them. Install whichever you need:
+
+```powershell
+winget install TheDocumentFoundation.LibreOffice   # Word/ODT/RTF to PDF (about 350 MB)
+winget install UB-Mannheim.TesseractOCR            # OCR; includes English language data
+```
+
+Detection looks in the standard install locations (`%ProgramFiles%\LibreOffice\program\soffice.exe`, `%ProgramFiles%\Tesseract-OCR\tesseract.exe`, `%LOCALAPPDATA%\Programs\Tesseract-OCR`) and on `PATH`. More OCR languages: put the `<lang>.traineddata` files from the official tessdata repository into `C:\Program Files\Tesseract-OCR\tessdata`, then click **Check again** in the OCR tool.
+
+Tested versions: LibreOffice 26.2.1.2, Tesseract 5.4.0.20240606.
+
 ## 8. Run and verify the app
 
 See the README for the full command list. In short:
@@ -126,4 +139,8 @@ npm run tauri build    # Windows production build and installers
 - npm package errors: check Node/npm versions and network connectivity.
 - Tauri capability errors (e.g. "forbidden path" or "not allowed"): inspect `src-tauri/capabilities/default.json` and follow current Tauri 2 plugin permission documentation; do not solve the issue by granting unrestricted access.
 - Port 1420 already in use when running `npm run tauri dev`: close the other dev server, since Tauri expects that fixed port.
+- Any installer fails with **Windows Installer Error 1719** (Visual Studio Build Tools exit code 8012): check that `C:\Windows\SysWOW64\msiexec.exe` exists. On the development machine it was missing; an elevated `sfc /scannow` restored it. A reboot alone did not help.
+- winget exit code 1602 while installing: the Windows administrator (UAC) prompt was declined or timed out.
+- Word to PDF says LibreOffice was not found although it is installed: it must be in a standard location or on PATH; click **Check again** after installing.
+- OCR says no language data is installed: add `.traineddata` files to the Tesseract `tessdata` folder.
 - Build failures: copy the first meaningful error and ask Claude Code to diagnose it. Include the command run and the relevant error output.

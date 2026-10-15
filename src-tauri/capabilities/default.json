@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Main window: native open/save dialogs plus read/write/stat of files the user picked in those dialogs. No static filesystem scope is granted; the dialog plugin adds each selected file to the fs scope at runtime.",
+  "description": "Main window: native open/save/folder dialogs; read, write, stat and exists checks on files the user picked (the dialog plugin adds each selection to the fs scope at runtime; no static scope is granted); and DocCraft's native byte-in/byte-out commands, which never receive file paths.",
   "windows": ["main"],
   "permissions": [
     "core:default",
@@ -9,6 +9,12 @@
     "dialog:allow-save",
     "fs:allow-read-file",
     "fs:allow-write-file",
-    "fs:allow-stat"
+    "fs:allow-stat",
+    "fs:allow-exists",
+    "allow-engine-status",
+    "allow-cancel-job",
+    "allow-compress-pdf",
+    "allow-convert-word-to-pdf",
+    "allow-ocr-image"
   ]
 }

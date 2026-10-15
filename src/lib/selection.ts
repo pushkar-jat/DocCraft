@@ -1,3 +1,4 @@
+import { extensionOf } from "./naming";
 import { directoryOfPath, fileNameFromPath, hasPdfExtension, isSamePath, pathKey } from "./paths";
 
 export const MIN_FILES_TO_MERGE = 2;
@@ -23,17 +24,21 @@ export function toSelectedFile(path: string): SelectedFile {
 /**
  * Appends newly picked paths to the current list, keeping the existing order.
  * Paths already in the list (or repeated within the batch) are reported as
- * duplicates; paths without a `.pdf` extension are reported as rejected.
+ * duplicates; paths `accepts` refuses (default: no `.pdf` extension) are reported as rejected.
  * The extension check is only a usability filter: content is validated at merge time.
  */
-export function addFiles(current: readonly SelectedFile[], paths: readonly string[]): AddFilesResult {
+export function addFiles(
+  current: readonly SelectedFile[],
+  paths: readonly string[],
+  accepts: (path: string) => boolean = hasPdfExtension,
+): AddFilesResult {
   const seen = new Set(current.map((file) => file.id));
   const files = [...current];
   const duplicates: string[] = [];
   const rejected: string[] = [];
 
   for (const path of paths) {
-    if (!hasPdfExtension(path)) {
+    if (!accepts(path)) {
       rejected.push(fileNameFromPath(path));
       continue;
     }
@@ -78,9 +83,9 @@ export function mergeBlocker(files: readonly SelectedFile[]): string | null {
 }
 
 /** Returns a user-facing error if the chosen output path is unsafe, or null if it is acceptable. */
-export function validateOutputPath(outputPath: string, inputPaths: readonly string[]): string | null {
-  if (!hasPdfExtension(outputPath)) {
-    return "The output file name must end in .pdf. Choose the save location again.";
+export function validateOutputPath(outputPath: string, inputPaths: readonly string[], extension = "pdf"): string | null {
+  if (extensionOf(outputPath) !== extension) {
+    return `The output file name must end in .${extension}. Choose the save location again.`;
   }
   const clash = inputPaths.find((input) => isSamePath(input, outputPath));
   if (clash !== undefined) {
@@ -90,6 +95,12 @@ export function validateOutputPath(outputPath: string, inputPaths: readonly stri
 }
 
 /** Suggests `merged.pdf` next to the first input, avoiding the names of the inputs. */
+/** Extension filter for `addFiles`, e.g. `hasExtension(["jpg", "jpeg", "png"])`. */
+export function hasExtension(extensions: readonly string[]): (path: string) => boolean {
+  const allowed = new Set(extensions.map((extension) => extension.toLowerCase()));
+  return (path) => allowed.has(extensionOf(path));
+}
+
 export function suggestOutputPath(inputPaths: readonly string[]): string {
   const directory = inputPaths.length > 0 ? directoryOfPath(inputPaths[0]) : "";
   for (let attempt = 0; ; attempt++) {

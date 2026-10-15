@@ -1,8 +1,21 @@
 # Dependencies and Licenses
 
+> **Phase 2:** the full, current licence review (including pdf.js, fflate, lopdf, image, and the detected engines LibreOffice and Tesseract) is in `docs/THIRD_PARTY_NOTICES.md`. This file keeps the library-selection reasoning. Phase 2 choices:
+>
+> | Need | Chosen | Why | Rejected |
+> |---|---|---|---|
+> | Text extraction, page rendering | **pdfjs-dist 6.4.299** (Apache-2.0, pinned) | Best-in-class, maintained by Mozilla, no runtime dependencies in the browser, handles CJK via cmaps | Rust `pdf-extract`/`lopdf::extract_text`: much weaker text decoding |
+> | DOCX writing | **fflate 0.8.3** (MIT, pinned) + a ~60-line writer (`src/lib/docxWriter.ts`) | Tiny, dependency-free; full control of output | `docx` npm package: larger, more than we need for basic layout |
+> | Compression | **lopdf 0.45** (MIT) + **image 0.25** (JPEG/PNG only) + **flate2** in Rust | In-process, bomb-safe decompression limits, no external binary, permissive licences | Ghostscript (AGPL), qpdf (extra binary; cannot downscale images) |
+> | Word to PDF | **LibreOffice**, detected | Only realistic local DOCX renderer; MPL-2.0 | Bundling (350 MB); Microsoft Word automation (not always installed, COM automation) |
+> | OCR | **Tesseract 5**, detected | Mature, Apache-2.0, produces searchable PDFs directly | Cloud OCR (forbidden); Windows.Media.Ocr (Windows-only, no PDF output) |
+> | Temp folders | **tempfile** (MIT OR Apache-2.0) | Unpredictable names in the user temp folder | — |
+>
+> The Phase 1 notes below still apply to pdf-lib.
+
 Collected on 2026-10-15 from `package-lock.json` / `src-tauri/Cargo.lock`. Re-check before any distribution, because versions change on `npm install` / `cargo update`.
 
-DocCraft itself has **no license chosen yet**. The product owner must pick one before distribution.
+DocCraft itself is licensed under MIT (see `LICENSE`).
 
 ## JavaScript: shipped in the app bundle
 
