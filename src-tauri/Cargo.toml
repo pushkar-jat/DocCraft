@@ -42,6 +42,10 @@ const-oid = { version = "0.9", features = ["db"] }
 p12-keystore = "0.4"
 sha2 = "0.10"
 
+[target.'cfg(windows)'.dependencies]
+# Already in the dependency tree via Tauri; used for the OS build number (Mica) and the accent colour.
+windows = { version = "0.62", features = ["Wdk_System_SystemServices", "Win32_System_SystemInformation", "Win32_System_WinRT", "UI_ViewManagement"] }
+
 
 # Read the optimization guideline for more details: https://tauri.app/concept/size/#cargo-configuration
 [profile.release]

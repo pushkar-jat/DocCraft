@@ -2,6 +2,7 @@
 // dialog-scoped fs plugin, sends the bytes here, and writes the result itself. Rust never receives
 // user file paths, so file access stays limited to what the user picked in native dialogs.
 
+mod appearance;
 mod compress;
 mod convert;
 mod engines;
@@ -214,13 +215,42 @@ async fn scan_page(jobs: State<'_, Jobs>, job_id: String) -> Result<Response, Ap
     Ok(Response::new(bytes))
 }
 
+#[tauri::command]
+async fn window_appearance(mica: State<'_, MicaEnabled>) -> Result<appearance::WindowAppearance, AppError> {
+    let accent = tauri::async_runtime::spawn_blocking(appearance::accent_palette).await.map_err(|_| AppError::internal())?;
+    Ok(appearance::WindowAppearance { mica: mica.0, accent })
+}
+
+/// Whether the main window was created with the Mica backdrop.
+struct MicaEnabled(bool);
+
+/// Creates the main window from its config. On Windows 11 it gets the Mica backdrop, which
+/// needs a transparent window; elsewhere it stays opaque so nothing behind it shows through.
+fn create_main_window(app: &tauri::App) -> tauri::Result<bool> {
+    let config = app.config().app.windows.iter().find(|w| w.label == "main").cloned().ok_or(tauri::Error::WindowNotFound)?;
+    let mica = appearance::supports_mica();
+    let mut builder = tauri::WebviewWindowBuilder::from_config(app, &config)?;
+    if mica {
+        builder = builder
+            .transparent(true)
+            .effects(tauri::utils::config::WindowEffectsConfig { effects: vec![tauri::window::Effect::Mica], ..Default::default() });
+    }
+    builder.build()?;
+    Ok(mica)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
         .manage(Jobs::default())
-        .invoke_handler(tauri::generate_handler![engine_status, cancel_job, compress_pdf, convert_document, ocr_image, protect_pdf, unlock_pdf, repair_pdf, certificate_info, sign_pdf, scanner_status, scan_page])
+        .setup(|app| {
+            let mica = create_main_window(app)?;
+            app.manage(MicaEnabled(mica));
+            Ok(())
+        })
+        .invoke_handler(tauri::generate_handler![engine_status, cancel_job, compress_pdf, convert_document, ocr_image, protect_pdf, unlock_pdf, repair_pdf, certificate_info, sign_pdf, scanner_status, scan_page, window_appearance])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

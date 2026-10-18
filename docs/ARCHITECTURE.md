@@ -116,7 +116,7 @@ The worker protocol is typed in `src/workers/pdfWorkerProtocol.ts`. The pure fun
 
 ### Native commands (raw binary IPC)
 
-Commands take the document as a raw request body (`invoke(cmd, Uint8Array, { headers })`) and return raw bytes (`tauri::ipc::Response`). There is no JSON encoding of file contents. Options travel as headers (`x-preset`, `x-extension`, `x-conversion`, `x-languages`, `x-dpi`, `x-password`, `x-page`, `x-rect`, `x-job-id`, …). The exceptions are `engine_status`, `scanner_status`, `cancel_job` and `scan_page`, which take no document.
+Commands take the document as a raw request body (`invoke(cmd, Uint8Array, { headers })`) and return raw bytes (`tauri::ipc::Response`). There is no JSON encoding of file contents. Options travel as headers (`x-preset`, `x-extension`, `x-conversion`, `x-languages`, `x-dpi`, `x-password`, `x-page`, `x-rect`, `x-job-id`, …). The exceptions are `engine_status`, `scanner_status`, `window_appearance`, `cancel_job` and `scan_page`, which take no document.
 
 ```mermaid
 sequenceDiagram
@@ -221,7 +221,7 @@ flowchart TB
 |---|---|
 | Webview → network | CSP: `default-src 'self'`, `connect-src 'self' ipc:`, `script-src 'self' 'wasm-unsafe-eval'` (WebAssembly image decoders only; JS `eval` blocked), `object-src 'none'`, `frame-src 'none'` |
 | Webview → filesystem | fs plugin with runtime scope only (dialog selections) |
-| Webview → Rust | Only 12 declared commands, each explicitly allowed; inputs are bytes plus validated header values; passwords percent-encoded in headers and never logged |
+| Webview → Rust | Only 13 declared commands, each explicitly allowed; inputs are bytes plus validated header values; passwords percent-encoded in headers and never logged |
 | Rust → OS processes | Absolute engine paths from known locations; argument arrays; fixed file names in a private temp folder; timeout; process-tree kill |
 | Untrusted documents | Signature checks (not extensions), bounded decompression, size caps, encrypted files refused, outputs re-validated |
 | LibreOffice | Private profile: macros disabled, untrusted referer links blocked, update checks and usage reporting off; one conversion at a time; HTML input has remote references neutralized first |
@@ -262,11 +262,13 @@ src/
     pdfWorkerClient.ts       Web Worker lifecycle
     pdfjs.ts                 lazy pdf.js + local asset URLs + page rendering
     pageEditing.ts           redaction rendering, certificate signing helpers
+    appearance.ts            applies Mica flag + Windows accent colour to the theme
     operations.ts output.ts  high-level operations shared by tools and batch
   state/                     useJob, usePdfSource, usePdfRenderer, merge reducer, engine detection
   workers/                   pdf-lib worker + typed protocol
 src-tauri/src/
   lib.rs                     commands, raw IPC, header decoding, job registry wiring
+  appearance.rs              Mica window backdrop (Windows 11), Windows accent colour
   compress.rs                compression presets (lopdf + image)
   convert.rs                 LibreOffice conversions (to PDF, PDF → PPTX, PDF/A), HTML neutralizing
   ocr.rs                     Tesseract page OCR

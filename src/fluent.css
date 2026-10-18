@@ -1,0 +1,642 @@
+/*
+ * Windows 11 (Fluent) look, layered over App.css.
+ * - Colours follow the WinUI 3 theme resources; the accent comes from the user's Windows setting
+ *   (--win-accent-* set by services/appearance.ts) with the Windows default blue as fallback.
+ * - With the Mica backdrop (html.mica, Windows 11) the page is transparent and surfaces are
+ *   translucent layers; otherwise the Windows solid background colours are used.
+ */
+
+:root {
+  --bg: #f3f3f3;
+  --layer: rgba(255, 255, 255, 0.5);
+  --surface: rgba(255, 255, 255, 0.7);
+  --surface-solid: #ffffff;
+  --surface-muted: rgba(0, 0, 0, 0.0241);
+  --surface-hover: rgba(249, 249, 249, 0.5);
+  --surface-pressed: rgba(249, 249, 249, 0.3);
+  --subtle-hover: rgba(0, 0, 0, 0.0373);
+  --subtle-pressed: rgba(0, 0, 0, 0.0241);
+  --border: rgba(0, 0, 0, 0.0578);
+  --border-strong: rgba(0, 0, 0, 0.1622);
+  --control-underline: rgba(0, 0, 0, 0.4459);
+  --control-stroke: rgba(0, 0, 0, 0.6063);
+  --text: rgba(0, 0, 0, 0.8956);
+  --text-muted: rgba(0, 0, 0, 0.6063);
+  --text-disabled: rgba(0, 0, 0, 0.3614);
+  --accent: var(--win-accent-dark1, #005fb8);
+  --accent-hover: color-mix(in srgb, var(--accent) 90%, transparent);
+  --accent-pressed: color-mix(in srgb, var(--accent) 80%, transparent);
+  --accent-text: var(--win-accent-dark2, #003e92);
+  --accent-subtle: color-mix(in srgb, var(--accent) 10%, transparent);
+  --on-accent: #ffffff;
+  --accent-disabled: rgba(0, 0, 0, 0.2169);
+  --on-accent-disabled: #ffffff;
+  --success-bg: #dff6dd;
+  --success-border: rgba(0, 0, 0, 0.0578);
+  --success-text: rgba(0, 0, 0, 0.8956);
+  --success-icon: #0f7b0f;
+  --error-bg: #fde7e9;
+  --error-border: rgba(0, 0, 0, 0.0578);
+  --error-text: #c42b1c;
+  --error-icon: #c42b1c;
+  --info-bg: rgba(246, 246, 246, 0.5);
+  --info-border: rgba(0, 0, 0, 0.0578);
+  --info-text: rgba(0, 0, 0, 0.8956);
+  --warning-bg: #fff4ce;
+  --warning-border: rgba(0, 0, 0, 0.0578);
+  --warning-text: #9d5d00;
+  --focus: rgba(0, 0, 0, 0.8956);
+  --focus-inner: #ffffff;
+  --radius: 8px;
+  --radius-control: 4px;
+  --shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-flyout: 0 8px 16px rgba(0, 0, 0, 0.14);
+
+  font-family: "Segoe UI Variable Text", "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #202020;
+    --layer: rgba(58, 58, 58, 0.3);
+    --surface: rgba(255, 255, 255, 0.0512);
+    --surface-solid: #2b2b2b;
+    --surface-muted: rgba(255, 255, 255, 0.0326);
+    --surface-hover: rgba(255, 255, 255, 0.0837);
+    --surface-pressed: rgba(255, 255, 255, 0.0326);
+    --subtle-hover: rgba(255, 255, 255, 0.0605);
+    --subtle-pressed: rgba(255, 255, 255, 0.0419);
+    --border: rgba(255, 255, 255, 0.0698);
+    --border-strong: rgba(255, 255, 255, 0.093);
+    --control-underline: rgba(255, 255, 255, 0.5442);
+    --control-stroke: rgba(255, 255, 255, 0.5442);
+    --text: #ffffff;
+    --text-muted: rgba(255, 255, 255, 0.786);
+    --text-disabled: rgba(255, 255, 255, 0.3628);
+    --accent: var(--win-accent-light2, #60cdff);
+    --accent-text: var(--win-accent-light2, #60cdff);
+    --on-accent: #000000;
+    --accent-disabled: rgba(255, 255, 255, 0.1581);
+    --on-accent-disabled: rgba(255, 255, 255, 0.5302);
+    --success-bg: #393d1b;
+    --success-text: #ffffff;
+    --success-icon: #6ccb5f;
+    --error-bg: #442726;
+    --error-text: #ff99a4;
+    --error-icon: #ff99a4;
+    --info-bg: rgba(255, 255, 255, 0.0326);
+    --info-text: #ffffff;
+    --warning-bg: #433519;
+    --warning-text: #fce100;
+    --focus: #ffffff;
+    --focus-inner: rgba(0, 0, 0, 0.7);
+    --shadow: 0 2px 4px rgba(0, 0, 0, 0.26);
+    --shadow-flyout: 0 8px 16px rgba(0, 0, 0, 0.26);
+    color-scheme: dark;
+  }
+}
+
+/* Mica: the window backdrop shows through the page. */
+html.mica,
+html.mica body {
+  background: transparent;
+}
+
+h1,
+h2 {
+  font-family: "Segoe UI Variable Display", "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+  box-shadow: 0 0 0 1px var(--focus-inner);
+  border-radius: var(--radius-control);
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+/* ---------------------------------------------------------------- Window chrome */
+.app-header {
+  background: transparent;
+  border-bottom: none;
+  padding: 8px 20px 4px;
+}
+
+.brand-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.brand img,
+.brand svg {
+  width: 20px;
+  height: 20px;
+}
+
+.header-note {
+  font-size: 12px;
+}
+
+/* The content area is a rounded "layer" on Mica, like Windows 11 Settings. */
+.app-main {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+}
+
+html.mica .app-main,
+.app-main {
+  background: var(--layer);
+  border-top: 1px solid var(--border);
+  border-left: 1px solid var(--border);
+  border-top-left-radius: var(--radius);
+}
+
+.app-main > * {
+  width: 100%;
+  max-width: 1000px;
+  padding: 28px 36px 40px;
+}
+
+@media (max-width: 760px) {
+  .app-main > * {
+    padding: 20px 16px 32px;
+  }
+}
+
+/* ---------------------------------------------------------------- Typography */
+.hero h1 {
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.view-title {
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.hint,
+.field-help,
+.picked-detail,
+.tool-description,
+.option-description {
+  color: var(--text-muted);
+}
+
+.privacy-pill {
+  background: var(--surface);
+  border-color: var(--border);
+  border-radius: var(--radius-control);
+  font-size: 12px;
+}
+
+/* ---------------------------------------------------------------- Cards and panels */
+.panel,
+.tool-tile {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: none;
+}
+
+.panel-toolbar {
+  border-bottom-color: var(--border);
+}
+
+.file-row + .file-row {
+  border-top-color: var(--border);
+}
+
+.file-row:hover {
+  background: var(--subtle-hover);
+}
+
+.file-position {
+  background: var(--surface-muted);
+}
+
+.tool-tile {
+  transition: background-color 0.083s;
+}
+
+.tool-tile:hover {
+  background: var(--surface-hover);
+  border-color: var(--border);
+}
+
+.tool-tile:active {
+  background: var(--surface-pressed);
+}
+
+.tool-icon,
+.tool-tile .tool-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-control);
+  background: var(--accent-subtle);
+  color: var(--accent-text);
+}
+
+.tool-icon--muted {
+  background: var(--surface-muted);
+  color: var(--text-disabled);
+}
+
+.tool-tile--unavailable,
+.tool-tile--unavailable:hover {
+  background: transparent;
+  border-style: dashed;
+  border-color: var(--border-strong);
+}
+
+.tool-title {
+  font-weight: 600;
+}
+
+.badge {
+  border-radius: var(--radius-control);
+  border-color: var(--border-strong);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.badge--accent {
+  color: var(--on-accent);
+}
+
+.option-card {
+  border-color: var(--border);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+}
+
+.option-card:hover {
+  background: var(--surface-hover);
+}
+
+.option-card--selected {
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+}
+
+.page-card {
+  border-color: var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.page-stage,
+.editor-properties {
+  background: var(--surface-muted);
+}
+
+.diff-side {
+  border-radius: var(--radius-control);
+}
+
+/* ---------------------------------------------------------------- Buttons */
+.button {
+  min-height: 32px;
+  padding: 5px 12px 6px;
+  border-radius: var(--radius-control);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  transition: background-color 0.083s;
+}
+
+.button--secondary {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-bottom-color: var(--border-strong);
+}
+
+.button--secondary:not(:disabled):hover {
+  background: var(--surface-hover);
+  border-color: var(--border);
+  border-bottom-color: var(--border-strong);
+}
+
+.button--secondary:not(:disabled):active {
+  background: var(--surface-pressed);
+  color: var(--text-muted);
+  border-bottom-color: var(--border);
+}
+
+.button--primary {
+  background: var(--accent);
+  color: var(--on-accent);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom-color: rgba(0, 0, 0, 0.4);
+}
+
+.button--primary:not(:disabled):hover {
+  background: var(--accent-hover);
+}
+
+.button--primary:not(:disabled):active {
+  background: var(--accent-pressed);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.button--primary:disabled {
+  opacity: 1;
+  background: var(--accent-disabled);
+  color: var(--on-accent-disabled);
+  border-color: transparent;
+}
+
+.button--ghost {
+  color: var(--text);
+}
+
+.button--ghost:not(:disabled):hover,
+.icon-button:not(:disabled):hover {
+  background: var(--subtle-hover);
+  color: var(--text);
+}
+
+.button--ghost:not(:disabled):active,
+.icon-button:not(:disabled):active {
+  background: var(--subtle-pressed);
+  color: var(--text-muted);
+}
+
+.button:not(.button--primary):disabled,
+.icon-button:disabled {
+  opacity: 1;
+  color: var(--text-disabled);
+}
+
+.button--large {
+  min-height: 36px;
+  padding: 7px 20px 8px;
+  font-size: 14px;
+}
+
+.icon-button {
+  border-radius: var(--radius-control);
+  color: var(--text);
+}
+
+.icon-button--danger:not(:disabled):hover {
+  background: var(--error-bg);
+  color: var(--error-icon);
+}
+
+.editor-tools .button[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--on-accent);
+  border-color: transparent;
+}
+
+/* ---------------------------------------------------------------- Text fields and combo boxes */
+.text-input,
+.number-input,
+.select,
+input[type="password"] {
+  min-height: 32px;
+  padding: 5px 10px 6px;
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-bottom-color: var(--control-underline);
+  border-radius: var(--radius-control);
+  transition: background-color 0.083s;
+}
+
+.text-input:hover,
+.number-input:hover,
+.select:hover {
+  background: var(--surface-hover);
+}
+
+.text-input:focus,
+.number-input:focus,
+.select:focus,
+input[type="password"]:focus {
+  outline: none;
+  box-shadow: inset 0 -1px 0 var(--accent);
+  border-bottom-color: var(--accent);
+  background: var(--surface-solid);
+}
+
+.text-input[aria-invalid="true"] {
+  border-bottom-color: var(--error-icon);
+  box-shadow: inset 0 -1px 0 var(--error-icon);
+}
+
+.select {
+  appearance: none;
+  padding-right: 32px;
+  border-bottom-color: var(--border-strong);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' fill='none' stroke='%23000' stroke-opacity='.6' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 11px center;
+  cursor: pointer;
+}
+
+.select option {
+  background: var(--surface-solid);
+  color: var(--text);
+}
+
+@media (prefers-color-scheme: dark) {
+  .select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' fill='none' stroke='%23fff' stroke-opacity='.79' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+}
+
+.select:disabled,
+.text-input:disabled,
+.number-input:disabled {
+  color: var(--text-disabled);
+  border-bottom-color: var(--border);
+}
+
+/* ---------------------------------------------------------------- Check boxes and radio buttons */
+input[type="checkbox"],
+input[type="radio"] {
+  appearance: none;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  display: inline-grid;
+  place-content: center;
+  border: 1px solid var(--control-stroke);
+  background: var(--surface-muted);
+  cursor: pointer;
+  transition: background-color 0.083s;
+}
+
+input[type="checkbox"] {
+  border-radius: var(--radius-control);
+}
+
+input[type="radio"] {
+  border-radius: 50%;
+}
+
+input[type="checkbox"]:not(:disabled):hover,
+input[type="radio"]:not(:disabled):hover {
+  background: var(--subtle-hover);
+}
+
+input[type="checkbox"]:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+input[type="checkbox"]:checked::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  background: var(--on-accent);
+  clip-path: polygon(14% 50%, 0 64%, 36% 100%, 100% 22%, 86% 8%, 36% 72%);
+}
+
+input[type="radio"]:checked {
+  border: 5px solid var(--accent);
+  background: var(--on-accent);
+}
+
+input[type="checkbox"]:disabled,
+input[type="radio"]:disabled {
+  cursor: default;
+  border-color: var(--text-disabled);
+  background: transparent;
+}
+
+input[type="checkbox"]:disabled:checked {
+  background: var(--text-disabled);
+  border-color: transparent;
+}
+
+input[type="radio"]:disabled:checked {
+  border-color: var(--text-disabled);
+}
+
+.option-card input[type="radio"],
+.option-card input[type="checkbox"] {
+  margin-top: 0;
+}
+
+/* ---------------------------------------------------------------- Sliders and colour pickers */
+input[type="range"] {
+  accent-color: var(--accent);
+}
+
+input[type="color"] {
+  width: 32px;
+  height: 32px;
+  padding: 2px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  cursor: pointer;
+}
+
+/* ---------------------------------------------------------------- Info bars and progress */
+.status {
+  border-radius: var(--radius-control);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.status--busy,
+.status--info {
+  background: var(--info-bg);
+}
+
+.status--success {
+  background: var(--success-bg);
+  border-left: 3px solid var(--success-icon);
+}
+
+.status--error {
+  background: var(--error-bg);
+  border-left: 3px solid var(--error-icon);
+}
+
+.status--warning {
+  background: var(--warning-bg);
+  border-left: 3px solid var(--warning-text);
+}
+
+.status--error .status-title,
+.status--error strong {
+  color: var(--text);
+}
+
+.field-error {
+  color: var(--error-icon);
+  font-weight: 400;
+}
+
+.progress {
+  height: 3px;
+  border-radius: 2px;
+  background: transparent;
+  box-shadow: inset 0 1px 0 var(--control-underline);
+  background-clip: content-box;
+}
+
+.progress-bar {
+  border-radius: 2px;
+}
+
+.batch-status {
+  border-radius: var(--radius-control);
+}
+
+.notice {
+  background: var(--accent-subtle);
+  color: var(--text);
+  border-bottom-color: var(--border);
+}
+
+/* ---------------------------------------------------------------- Scroll bars (thin, Windows 11 style) */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--control-underline);
+  border: 4px solid transparent;
+  border-radius: 6px;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  border-width: 3px;
+}

@@ -200,7 +200,7 @@ export function ScanView({ onBack }: { onBack: () => void }) {
         </div>
         {mode === "scanner" ? (
           <div className="choice-row">
-            <button type="button" className="button button--primary" onClick={scan} disabled={job.busy || !scanners?.supported}>
+            <button type="button" className="button button--primary" onClick={scan} disabled={job.busy || !scanners?.supported || scanners.scanners.length === 0}>
               Scan a page
             </button>
             <span className="field-help">

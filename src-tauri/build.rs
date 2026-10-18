@@ -14,6 +14,7 @@ fn main() {
         "sign_pdf",
         "scanner_status",
         "scan_page",
+        "window_appearance",
     ])))
     .expect("failed to run tauri-build");
 }

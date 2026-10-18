@@ -123,6 +123,15 @@ export async function scanPage(signal?: AbortSignal): Promise<Uint8Array> {
   }
 }
 
+export interface WindowAppearance {
+  mica: boolean;
+  accent: { accent: string; dark1: string; dark2: string; light1: string; light2: string } | null;
+}
+
+export async function getWindowAppearance(): Promise<WindowAppearance> {
+  return invoke<WindowAppearance>("window_appearance");
+}
+
 export async function getEngineStatus(): Promise<EngineStatus> {
   return invoke<EngineStatus>("engine_status");
 }

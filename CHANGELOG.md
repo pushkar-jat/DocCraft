@@ -2,7 +2,16 @@
 
 All notable changes to DocCraft are listed here. Format based on [Keep a Changelog](https://keepachangelog.com/).
 
-## [Unreleased] — Full toolkit: 32 local tools
+## [Unreleased] — Windows 11 look
+
+### Changed
+- The UI now follows Windows 11 (Fluent): Mica window backdrop on Windows 11, the user's Windows accent colour, Segoe UI Variable, and Fluent buttons, text fields, combo boxes, check boxes, radio buttons, info bars and scroll bars. Light/dark follow the Windows app setting. Windows 10 keeps a solid background.
+- New native command `window_appearance` (no document input; allowed in the capability file).
+
+### Fixed
+- Scan to PDF: "Scan a page" is disabled when no scanner is found.
+
+## Full toolkit: 32 local tools
 
 ### Added
 - **Organize**: Remove pages, Organize PDF (thumbnail grid: reorder, rotate, duplicate, delete, insert blank pages), **Scan to PDF** (Windows scanner via WIA, or camera capture with an optional "document mode" filter; optional OCR).

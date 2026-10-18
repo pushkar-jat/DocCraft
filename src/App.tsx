@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react";
 import "./App.css";
+import "./fluent.css";
 import { Dashboard } from "./components/Dashboard";
 import { LogoMark } from "./components/Icons";
 import { MergeView } from "./components/MergeView";

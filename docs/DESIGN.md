@@ -8,7 +8,7 @@ How DocCraft looks and behaves, and the rules new screens should follow. For the
 2. **Honest capability.** A button either works or is not there. Tools that need LibreOffice or Tesseract say so before you start. Results state exactly what happened, including "could not be made smaller" and "basic layout".
 3. **One pattern, many tools.** Every tool screen has the same anatomy, so learning one teaches all of them.
 4. **The original is sacred.** Copy and behaviour both promise that originals are never changed or silently replaced.
-5. **Calm, not clever.** System fonts, one accent colour, no animation beyond progress.
+5. **Calm, not clever.** Looks like Windows itself: system font, the user's own accent colour, no animation beyond progress.
 
 ## Information architecture
 
@@ -80,26 +80,30 @@ Rules:
 
 ## Visual design
 
-Tokens live at the top of `src/App.css` and switch automatically with the system light/dark setting.
+DocCraft follows the **Windows 11 (Fluent / WinUI 3)** look. `src/fluent.css` is a theme layer over `src/App.css`: it redefines the colour tokens and restyles the controls. Component markup does not change. Tokens switch automatically with the Windows light/dark app setting.
 
 | Token | Light | Dark | Use |
 |---|---|---|---|
-| `--bg` | `#f4f6f9` | `#12161d` | Window background |
-| `--surface` | `#ffffff` | `#1b212b` | Panels, tiles |
-| `--accent` | `#2f5bd3` | `#6d94ff` | Primary buttons, icons, focus of attention |
-| `--text` / `--text-muted` | `#17202c` / `#5a6575` | `#e8ecf2` / `#9aa5b5` | Body / secondary text |
-| `--success-*`, `--error-*`, `--info-*`, `--warning-*` | tinted backgrounds + borders + text | darker tints | Status panels and batch chips |
-| `--radius` | 10px | | Panels, tiles |
+| `--bg` | `#f3f3f3` (transparent with Mica) | `#202020` (transparent with Mica) | Window background |
+| `--layer` | white 50% | `#3a3a3a` 30% | Content area under the header, like Windows Settings |
+| `--surface` | white 70% | white 5% | Cards, tiles, panels, buttons, text fields |
+| `--accent` | Windows accent "dark 1" (default `#005fb8`) | Windows accent "light 2" (default `#60cdff`) | Primary buttons, selected options, check boxes, icon tint |
+| `--text` / `--text-muted` | black 90% / 61% | white / 79% | Body / secondary text |
+| `--success-*`, `--error-*`, `--warning-*`, `--info-*` | WinUI InfoBar colours | WinUI InfoBar colours | Status bars and batch chips |
+| `--radius` / `--radius-control` | 8px / 4px | | Cards / controls |
 
-- **Type:** the system UI font ("Segoe UI" on Windows). Titles 1.45–1.7rem at weight 650; body 15px / 1.5. No web fonts, so nothing is fetched.
-- **Icons:** inline SVG, 24px grid, 1.8px stroke (`src/components/Icons.tsx`). Decorative icons are `aria-hidden`.
-- **Layout:** content column max 920px, centred. The tool grid uses `auto-fill, minmax(260px, 1fr)`. The window minimum is 720×520.
-- **Motion:** only progress bars animate, and they stop under `prefers-reduced-motion`.
+- **Native window:** on Windows 11 the main window uses the **Mica** backdrop (`src-tauri/src/appearance.rs`; the window is created in `setup` so Windows 10 gets a solid background instead of a transparent one). The title bar is the standard Windows title bar.
+- **Accent colour:** read from Windows (`UISettings`) by the `window_appearance` command and applied as `--win-accent-*` variables (`src/services/appearance.ts`). It refreshes when the window regains focus, so changing the accent in Windows Settings is picked up.
+- **Controls:** Fluent buttons (accent / standard / subtle), text fields with an accent underline on focus, combo boxes with a chevron, Fluent check boxes and radio buttons, thin overlay scroll bars, InfoBar-style status messages, and a 3px progress bar.
+- **Type:** Segoe UI Variable (Text for body, Display for titles), the Windows 11 system font. Body 14/20px; titles 28/36px semibold; section headers 14px semibold. No web fonts, so nothing is fetched.
+- **Icons:** inline SVG, 24px grid, 1.8px stroke (`src/components/Icons.tsx`), tinted with the accent on a subtle accent tile. Decorative icons are `aria-hidden`.
+- **Layout:** content column max 1000px. The tool grid uses `auto-fill`. The window minimum is 720×520.
+- **Motion:** only hover/press colour changes (83 ms, as in WinUI) and progress bars. All of it stops under `prefers-reduced-motion`.
 
 ## Accessibility
 
 - Native controls throughout: `<button>`, `<input type="radio">`, `<select>`, `<fieldset>` + `<legend>`, `<label>`. Everything is keyboard-operable with standard keys.
-- Global visible focus ring (`:focus-visible`, 2px, accent colour).
+- Global visible focus ring (`:focus-visible`): the Windows 11 two-tone focus rectangle (2px outer, 1px inner contrast).
 - Icon-only buttons have explicit labels ("Move report.pdf up", "Remove report.pdf from the list").
 - Status areas use `role="status"` / `aria-live="polite"`; errors use `role="alert"`; progress uses `role="progressbar"` with values when known and `aria-busy` when indeterminate.
 - Inline field validation is announced (`aria-live`) and linked with `aria-describedby` / `aria-invalid`.

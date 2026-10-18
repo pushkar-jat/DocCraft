@@ -1095,6 +1095,7 @@ dependencies = [
  "tauri-plugin-dialog",
  "tauri-plugin-fs",
  "tempfile",
+ "windows",
  "x509-cert 0.2.5",
 ]
 

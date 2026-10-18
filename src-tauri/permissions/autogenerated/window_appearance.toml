@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-window-appearance"
+description = "Enables the window_appearance command without any pre-configured scope."
+commands.allow = ["window_appearance"]
+
+[[permission]]
+identifier = "deny-window-appearance"
+description = "Denies the window_appearance command without any pre-configured scope."
+commands.deny = ["window_appearance"]
