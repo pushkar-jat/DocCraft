@@ -11,19 +11,27 @@ Merge, split, compress, convert, edit, sign, protect and OCR your documents: no 
 ![Built with Tauri 2](https://img.shields.io/badge/built%20with-Tauri%202-24C8DB)
 ![Works offline](https://img.shields.io/badge/works-offline-2ea44f)
 ![License: MIT](https://img.shields.io/badge/license-MIT-blue)
+![Version 0.2.0](https://img.shields.io/badge/version-0.2.0-0078D6)
 ![Status: early](https://img.shields.io/badge/status-early%20release-orange)
 
-<a href="https://github.com/pushkar-jat/DocCraft/releases/latest/download/DocCraft_x64-setup.exe"><img src="https://img.shields.io/badge/Download_for_Windows-DocCraft_x64--setup.exe-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="Download DocCraft for Windows"></a>
+<a href="https://github.com/pushkar-jat/DocCraft/releases/download/doccraft_v1.0.0/DocCraft_0.2.0_x64-setup.exe"><img src="https://img.shields.io/badge/Download_for_Windows-DocCraft_0.2.0_x64--setup.exe-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="Download DocCraft 0.2.0 for Windows"></a>
 
 <sub>Windows 10/11, 64-bit · about 5 MB · <a href="https://github.com/pushkar-jat/DocCraft/releases">all releases</a></sub>
 
-<img src="docs/screenshots/dashboard.png" width="820" alt="DocCraft dashboard with PDF tools grouped by category">
+<img src="docs/screenshots/dashboard.png" width="820" alt="DocCraft dashboard in the Windows 11 style, with PDF tools grouped by category">
 
 </div>
 
 ## Why DocCraft?
 
 Online PDF sites are convenient, but they ask you to upload contracts, invoices, IDs and reports to someone else's server. **DocCraft gives you the same everyday tools as a small desktop app that keeps every file on your device.** It works without an internet connection, needs no sign-up, and contains no analytics.
+
+## What's new in 0.2.0
+
+- **32 tools instead of 9**: page organizing, scanning, repair, Office and HTML conversions, PDF to Excel/PowerPoint/PDF-A/Markdown, editing, forms, watermarks, page numbers, protect/unlock, signing (including certificate signatures), redaction and compare.
+- **Windows 11 look**: Mica window background, your own Windows accent colour, Segoe UI Variable and Fluent controls. Light and dark follow your Windows setting.
+
+Full list: [CHANGELOG.md](CHANGELOG.md).
 
 ## Features
 
@@ -45,11 +53,16 @@ Built to be trustworthy:
 - **Originals are never changed.** Outputs can never replace an input, and Windows asks before replacing any other file.
 - **Honest results.** If a PDF can't be made smaller, DocCraft says so instead of saving a bigger file. Limits like "basic layout" are shown next to the button.
 - **Cancel anything.** Cancelling stops the work immediately and leaves nothing behind.
-- **Accessible.** Keyboard-operable, screen-reader-friendly status messages, light and dark themes.
+- **Feels like Windows.** Windows 11 styling with Mica and your accent colour; light and dark follow the system.
+- **Accessible.** Keyboard-operable, screen-reader-friendly status messages, visible focus.
 
 ## Screenshots
 
 <table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/compress-options.png" alt="Compress PDF with three Fluent-style option cards"><br><sub><b>Windows 11 style</b>: Fluent controls in your accent colour</sub></td>
+    <td width="50%"><img src="docs/screenshots/scan.png" alt="Scan to PDF with scanner and camera sources"><br><sub><b>Scan to PDF</b>: scanner or camera, optional OCR</sub></td>
+  </tr>
   <tr>
     <td width="50%"><img src="docs/screenshots/merge.png" alt="Merge PDF: three files in order and a success message"><br><sub><b>Merge</b>: arrange files, then merge in that order</sub></td>
     <td width="50%"><img src="docs/screenshots/split.png" alt="Split PDF with custom page ranges"><br><sub><b>Split</b>: page ranges validated as you type</sub></td>
@@ -63,6 +76,8 @@ Built to be trustworthy:
     <td><img src="docs/screenshots/batch.png" alt="Batch processing with per-file status"><br><sub><b>Batch</b>: one bad file never stops the rest</sub></td>
   </tr>
 </table>
+
+<sub>The lower four screenshots show results from an earlier version; tool behaviour is unchanged, only the styling is new.</sub>
 
 ## Privacy
 
@@ -79,11 +94,13 @@ Details: [docs/ARCHITECTURE.md → Security boundaries](docs/ARCHITECTURE.md#sec
 
 ### Download (Windows 10/11, 64-bit)
 
-1. **[⬇ Download DocCraft_x64-setup.exe](https://github.com/pushkar-jat/DocCraft/releases/latest/download/DocCraft_x64-setup.exe)** (always the latest version). Older versions are on the [Releases](https://github.com/pushkar-jat/DocCraft/releases) page.
+1. **[⬇ Download DocCraft_0.2.0_x64-setup.exe](https://github.com/pushkar-jat/DocCraft/releases/download/doccraft_v1.0.0/DocCraft_0.2.0_x64-setup.exe)** (version 0.2.0, about 5 MB). Older versions are on the [Releases](https://github.com/pushkar-jat/DocCraft/releases) page.
 2. Run it. Because DocCraft is not code-signed yet, Windows SmartScreen may show *"Windows protected your PC"*: click **More info → Run anyway**.
 3. Start **DocCraft** from the Start menu.
 
-An `.msi` package is also provided for managed/IT installs.
+**Updating:** run the new installer. It replaces the old version in place; DocCraft stores no documents, so nothing is lost.
+
+The Mica background needs Windows 11; on Windows 10 the app uses a solid background and works the same.
 
 ### Optional: Office conversions and OCR
 
