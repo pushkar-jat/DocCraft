@@ -26,6 +26,9 @@ interface Line {
   text: string;
 }
 
+/** A line that starts a bullet ("•", "-", "*", "◦", "▪") or numbered ("1.", "2)", "a)") item. */
+export const LIST_MARKER = /^(?:[•◦▪●‣*-]|\d{1,3}[.)]|[a-z][.)])\s+/i;
+
 function median(values: number[]): number {
   if (values.length === 0) return 0;
   const sorted = [...values].sort((a, b) => a - b);
@@ -83,7 +86,8 @@ export function layoutPage(fragments: readonly TextFragment[]): Paragraph[] {
     const last = current?.lines[current.lines.length - 1];
     const sameSize = last !== undefined && Math.abs(last.fontSize - line.fontSize) <= Math.max(last.fontSize, line.fontSize) * 0.15;
     const closeEnough = last !== undefined && last.y - line.y <= Math.max(last.fontSize, line.fontSize) * 1.6;
-    if (current && sameSize && closeEnough) {
+    // Each bullet or numbered item starts its own paragraph instead of merging with the previous line.
+    if (current && sameSize && closeEnough && !LIST_MARKER.test(line.text)) {
       current.lines.push(line);
     } else {
       paragraphs.push({ lines: [line] });
@@ -98,6 +102,11 @@ export function layoutPage(fragments: readonly TextFragment[]): Paragraph[] {
       heading: fontSize >= bodySize * 1.3 && group.length <= 3,
     };
   });
+}
+
+/** The text lines of a page, top to bottom (used by Compare). */
+export function pageLines(fragments: readonly TextFragment[]): string[] {
+  return buildLines(fragments).map((line) => line.text);
 }
 
 export function countCharacters(pages: readonly Paragraph[][]): number {

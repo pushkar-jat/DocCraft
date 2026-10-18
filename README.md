@@ -5,7 +5,7 @@
 # DocCraft
 
 **Everyday PDF tools that run entirely on your computer.**
-Merge, split, compress, convert and OCR your documents: no uploads, no account, no tracking.
+Merge, split, compress, convert, edit, sign, protect and OCR your documents: no uploads, no account, no tracking.
 
 ![Platform: Windows](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D6)
 ![Built with Tauri 2](https://img.shields.io/badge/built%20with-Tauri%202-24C8DB)
@@ -15,9 +15,9 @@ Merge, split, compress, convert and OCR your documents: no uploads, no account, 
 
 <a href="https://github.com/pushkar-jat/DocCraft/releases/latest/download/DocCraft_x64-setup.exe"><img src="https://img.shields.io/badge/Download_for_Windows-DocCraft_x64--setup.exe-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="Download DocCraft for Windows"></a>
 
-<sub>Windows 10/11, 64-bit · about 4 MB · <a href="https://github.com/pushkar-jat/DocCraft/releases">all releases</a></sub>
+<sub>Windows 10/11, 64-bit · about 5 MB · <a href="https://github.com/pushkar-jat/DocCraft/releases">all releases</a></sub>
 
-<img src="docs/screenshots/dashboard.png" width="820" alt="DocCraft dashboard with nine PDF tools">
+<img src="docs/screenshots/dashboard.png" width="820" alt="DocCraft dashboard with PDF tools grouped by category">
 
 </div>
 
@@ -27,17 +27,19 @@ Online PDF sites are convenient, but they ask you to upload contracts, invoices,
 
 ## Features
 
-| | Tool | What it does |
-|---|---|---|
-| 📎 | **Merge PDF** | Combine PDFs in the order you choose |
-| ✂️ | **Split PDF** | One file per page range, or every N pages |
-| 📄 | **Extract pages** | Copy pages, in any order (`3, 1, 5-8`), into a new PDF |
-| 🗜️ | **Compress PDF** | Three clear presets, with before/after size shown |
-| 🖼️ | **Images to PDF** | JPEG/PNG to one PDF; phone-photo rotation respected |
-| 📝 | **PDF to Word** | Editable DOCX from a text PDF *(basic layout)* |
-| 📃 | **Word to PDF** | DOCX, DOC, ODT, RTF to PDF *(uses LibreOffice)* |
-| 🔍 | **OCR / searchable PDF** | Make scans searchable and copyable *(uses Tesseract)* |
-| 📚 | **Batch processing** | Compress or convert many files at once |
+32 working tools in seven groups. Tools marked *LO* use LibreOffice and *OCR* uses Tesseract (both free, installed separately, detected automatically).
+
+| Group | Tools |
+|---|---|
+| **Organize** | Merge PDF · Split PDF · Remove pages · Extract pages · Organize PDF (reorder, rotate, duplicate, delete and insert blank pages on thumbnails) · Scan to PDF (scanner or camera) |
+| **Optimize** | Compress PDF (three presets, before/after size) · Repair PDF · OCR PDF *(OCR)* · Batch processing |
+| **Convert to PDF** | JPG/PNG to PDF · Word to PDF *(LO)* · PowerPoint to PDF *(LO)* · Excel to PDF *(LO)* · HTML to PDF *(LO, remote content blocked)* |
+| **Convert from PDF** | PDF to JPG/PNG · PDF to Word · PDF to Excel · PDF to PowerPoint *(LO)* · PDF to PDF/A *(LO)* |
+| **Edit** | Rotate PDF · Add page numbers · Add watermark (text or image) · Crop PDF · Edit PDF (add text, images, shapes, highlights, white-out) · PDF Forms (fill in fields) |
+| **Security** | Unlock PDF · Protect PDF (AES-256, print/copy/edit permissions) · Sign PDF (drawn/typed/image signature, plus optional digital signature with your .pfx certificate) · Redact PDF (true removal: redacted pages are flattened) · Compare PDF (text differences side by side) |
+| **Intelligence** | PDF to Markdown |
+
+**AI Summarizer** and **Translate PDF** are shown as *Not available yet*: they would need a cloud AI service, and DocCraft never sends your documents anywhere.
 
 Built to be trustworthy:
 - **Originals are never changed.** Outputs can never replace an input, and Windows asks before replacing any other file.
@@ -83,13 +85,13 @@ Details: [docs/ARCHITECTURE.md → Security boundaries](docs/ARCHITECTURE.md#sec
 
 An `.msi` package is also provided for managed/IT installs.
 
-### Optional: Word to PDF and OCR
+### Optional: Office conversions and OCR
 
-These two tools use free programs that you install once. DocCraft finds them automatically and shows setup help if they are missing.
+The Office/HTML/PowerPoint/PDF-A conversions and OCR use free programs that you install once. DocCraft finds them automatically and shows setup help if they are missing.
 
 ```powershell
-winget install TheDocumentFoundation.LibreOffice   # Word to PDF
-winget install UB-Mannheim.TesseractOCR            # OCR (English included)
+winget install TheDocumentFoundation.LibreOffice   # Office/HTML to PDF, PDF to PowerPoint, PDF/A
+winget install UB-Mannheim.TesseractOCR            # OCR, searchable scans (English included)
 ```
 
 Everything else works without any extra software.
@@ -100,12 +102,16 @@ Settings → Apps → Installed apps → **DocCraft** → Uninstall.
 
 ## Known limitations
 
-- **PDF to Word** keeps text, paragraphs, headings and page breaks. Images, tables and columns are not reproduced yet.
+- **PDF to Word / Excel / Markdown** rebuild text and simple tables from the PDF's text layer. Images and complex layouts are not reproduced; scanned PDFs need OCR first.
+- **Edit PDF** adds new content on top of pages; it does not re-flow or change existing text.
+- **Digital signatures** are PAdES baseline (B-B) without a trusted timestamp; self-signed certificates show as "unknown signer" in other readers.
+- **Compare** compares text, not visual appearance.
+- **Scan to PDF** uses the Windows scanner dialog (WIA); camera capture has no automatic edge detection.
 - **Compression** helps most with photo-heavy PDFs; already-optimized or scanned (JBIG2/CCITT) PDFs may not shrink.
-- **Password-protected PDFs** are not supported yet.
+- **Password-protected PDFs**: open them with Unlock PDF first (you need the password).
 - Windows only for now; macOS and Linux builds are planned.
 
-Full list: [docs/PHASE_2_STATUS.md](docs/PHASE_2_STATUS.md#known-limitations).
+Full lists: [toolkit status](docs/TOOLKIT_STATUS.md#still-open) and [Phase 2 limitations](docs/PHASE_2_STATUS.md#known-limitations).
 
 ## Building from source
 
@@ -130,7 +136,7 @@ cargo clippy --all-targets        # lint
 
 ## Tech stack
 
-[Tauri 2](https://tauri.app) (Rust) · React 19 + TypeScript · [pdf-lib](https://pdf-lib.js.org) · [pdf.js](https://mozilla.github.io/pdf.js/) · [lopdf](https://github.com/J-F-Liu/lopdf) · [image](https://github.com/image-rs/image) · [fflate](https://github.com/101arrowz/fflate) · optional [LibreOffice](https://www.libreoffice.org) and [Tesseract](https://github.com/tesseract-ocr/tesseract) · Vitest
+[Tauri 2](https://tauri.app) (Rust) · React 19 + TypeScript · [pdf-lib](https://pdf-lib.js.org) · [pdf.js](https://mozilla.github.io/pdf.js/) · [lopdf](https://github.com/J-F-Liu/lopdf) · RustCrypto ([cms](https://github.com/RustCrypto/formats), rsa, p256/p384) · [image](https://github.com/image-rs/image) · [fflate](https://github.com/101arrowz/fflate) · optional [LibreOffice](https://www.libreoffice.org) and [Tesseract](https://github.com/tesseract-ocr/tesseract) · Vitest
 
 ## Documentation
 
@@ -140,7 +146,7 @@ cargo clippy --all-targets        # lint
 | [Design](docs/DESIGN.md) | UX principles, screen anatomy, job lifecycle, visual tokens, accessibility, adding a tool |
 | [Setup (Windows)](docs/SETUP_WINDOWS.md) | Toolchain, engines, troubleshooting |
 | [Third-party notices](docs/THIRD_PARTY_NOTICES.md) | Licences of every bundled component and the detected engines |
-| [Status](docs/PHASE_2_STATUS.md) · [Test plan](docs/PHASE_2_TEST_PLAN.md) · [Acceptance](docs/PHASE_2_ACCEPTANCE.md) | What is verified, how, and what is still open |
+| [Toolkit status](docs/TOOLKIT_STATUS.md) · [Phase 2 status](docs/PHASE_2_STATUS.md) · [Test plan](docs/PHASE_2_TEST_PLAN.md) · [Acceptance](docs/PHASE_2_ACCEPTANCE.md) | What is verified, how, and what is still open |
 | [Product spec](docs/PRODUCT_SPEC.md) | Principles and roadmap |
 
 ## Contributing

@@ -1,4 +1,5 @@
 import { CancelledError, DocError } from "../lib/errors";
+import type { FormInfo } from "../lib/forms";
 import type { MergeProgress } from "../lib/merge";
 import type { MergeFunction } from "../lib/workflow";
 import type { WorkerRequest, WorkerResponse } from "../workers/pdfWorkerProtocol";
@@ -12,7 +13,7 @@ export interface WorkerOptions {
  * Runs one pdf-lib job in a fresh Web Worker so the UI stays responsive.
  * Cancelling terminates the worker immediately; nothing it produced is used.
  */
-export function runPdfWorker(request: WorkerRequest, options: WorkerOptions = {}): Promise<{ outputs: Uint8Array[]; pageCount: number }> {
+export function runPdfWorker(request: WorkerRequest, options: WorkerOptions = {}): Promise<{ outputs: Uint8Array[]; pageCount: number; form?: FormInfo }> {
   return new Promise((resolve, reject) => {
     if (options.signal?.aborted) {
       reject(new CancelledError());
@@ -35,7 +36,7 @@ export function runPdfWorker(request: WorkerRequest, options: WorkerOptions = {}
         options.onProgress?.(message);
       } else if (message.type === "done") {
         finish();
-        resolve({ outputs: message.outputs, pageCount: message.pageCount });
+        resolve({ outputs: message.outputs, pageCount: message.pageCount, form: message.form });
       } else {
         finish();
         reject(new DocError(message.code, message.message, message.fileName));

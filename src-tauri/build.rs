@@ -5,8 +5,15 @@ fn main() {
         "engine_status",
         "cancel_job",
         "compress_pdf",
-        "convert_word_to_pdf",
+        "convert_document",
         "ocr_image",
+        "protect_pdf",
+        "unlock_pdf",
+        "repair_pdf",
+        "certificate_info",
+        "sign_pdf",
+        "scanner_status",
+        "scan_page",
     ])))
     .expect("failed to run tauri-build");
 }

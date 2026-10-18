@@ -790,3 +790,391 @@ button {
   color: var(--text-muted);
   overflow-wrap: anywhere;
 }
+
+/* Organize PDF: page grid */
+.page-grid {
+  list-style: none;
+  margin: 0;
+  padding: 14px 16px 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+  gap: 12px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.page-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-muted);
+}
+
+.page-thumb {
+  width: 140px;
+  height: 160px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.page-thumb img {
+  max-width: 140px;
+  max-height: 160px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: transform 0.15s;
+}
+
+.page-thumb-blank,
+.page-thumb-placeholder {
+  width: 112px;
+  height: 150px;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  color: #8a94a3;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.page-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2px;
+}
+
+.page-actions .icon-button {
+  width: 28px;
+  height: 28px;
+  font-size: 1rem;
+}
+
+.tool-tile--unavailable {
+  cursor: default;
+  border-style: dashed;
+  box-shadow: none;
+  background: transparent;
+}
+
+.tool-tile--unavailable:hover {
+  border-color: var(--border);
+}
+
+.tool-tile--unavailable .tool-title,
+.tool-tile--unavailable .tool-description {
+  color: var(--text-muted);
+}
+
+.tool-icon--muted {
+  background: var(--surface-muted);
+  color: var(--text-muted);
+}
+
+.dashboard > section + section {
+  margin-top: -8px;
+}
+
+/* Compact tiles: the dashboard lists many tools */
+.tool-grid {
+  grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+  gap: 10px;
+}
+
+.tool-tile {
+  padding: 12px 14px;
+  gap: 12px;
+  align-items: center;
+}
+
+.tool-tile .tool-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+}
+
+.tool-tile .tool-title {
+  font-size: 0.95rem;
+}
+
+.tool-tile .tool-description {
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.tool-tile .engine-tag {
+  margin-top: 3px;
+  font-size: 0.74rem;
+}
+
+/* Compare PDF */
+.diff-list {
+  list-style: none;
+  margin: 0;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 55vh;
+  overflow-y: auto;
+}
+
+.diff-hunk {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.diff-side {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  min-width: 0;
+}
+
+.diff-side--removed {
+  border-color: var(--error-border);
+}
+
+.diff-side--added {
+  border-color: var(--success-border);
+}
+
+.diff-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.diff-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 0.9rem;
+}
+
+.diff-text del {
+  background: var(--error-bg);
+  color: var(--error-text);
+  text-decoration: line-through;
+}
+
+.diff-text ins {
+  background: var(--success-bg);
+  color: var(--success-text);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* PDF Forms */
+.form-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px 20px;
+}
+
+.form-fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.form-fields label.choice {
+  flex-direction: row;
+  align-items: center;
+}
+
+.form-fields fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.form-fields legend {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* Page editor (Edit PDF, Redact, Sign) */
+.page-editor {
+  display: flex;
+  flex-direction: column;
+}
+
+.page-stage {
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  background: var(--surface-muted);
+  max-height: 70vh;
+  overflow: auto;
+}
+
+.page-surface {
+  position: relative;
+  width: min(100%, 760px);
+  user-select: none;
+  touch-action: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  background: #fff;
+}
+
+.page-surface--draw {
+  cursor: crosshair;
+}
+
+.page-surface img {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+}
+
+.page-loading {
+  aspect-ratio: 0.707;
+  display: grid;
+  place-items: center;
+  color: #6b7280;
+}
+
+.page-item {
+  position: absolute;
+  border: 1.5px dashed var(--accent);
+  cursor: move;
+  overflow: hidden;
+}
+
+.page-item:focus-visible,
+.page-item--selected {
+  border-style: solid;
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.page-item--draft {
+  border-style: dashed;
+  background: rgba(47, 91, 211, 0.12);
+  pointer-events: none;
+}
+
+.page-item-handle {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 14px;
+  height: 14px;
+  background: var(--accent);
+  cursor: nwse-resize;
+}
+
+.page-item-text {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 1px 2px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: Helvetica, Arial, sans-serif;
+  line-height: 1.25;
+  pointer-events: none;
+}
+
+.page-item-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.page-item-fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.page-editor-hint {
+  padding: 8px 16px 12px;
+}
+
+.editor-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.editor-tools .button[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--on-accent);
+  border-color: var(--accent);
+}
+
+/* Signature pad */
+.signature-pad {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.signature-canvas {
+  width: min(100%, 540px);
+  aspect-ratio: 900 / 260;
+  background: #fff;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  touch-action: none;
+}
+
+.signature-canvas--draw {
+  cursor: crosshair;
+}
+
+.page-surface {
+  container-type: inline-size;
+}
+
+.editor-properties {
+  flex-wrap: wrap;
+  align-items: flex-end;
+  background: var(--surface-muted);
+}
+
+/* Scan to PDF */
+.camera-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.camera-preview {
+  width: min(100%, 640px);
+  max-height: 46vh;
+  background: #000;
+  border-radius: 8px;
+}
+
+.camera-preview--off {
+  display: none;
+}

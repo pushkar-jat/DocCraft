@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-repair-pdf"
+description = "Enables the repair_pdf command without any pre-configured scope."
+commands.allow = ["repair_pdf"]
+
+[[permission]]
+identifier = "deny-repair-pdf"
+description = "Denies the repair_pdf command without any pre-configured scope."
+commands.deny = ["repair_pdf"]

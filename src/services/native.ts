@@ -27,6 +27,7 @@ interface NativeError {
 const KNOWN_CODES = new Set<string>([
   "not-pdf", "not-document", "invalid-image", "encrypted", "unsupported", "empty",
   "engine-missing", "conversion-failed", "timeout", "internal",
+  "wrong-password", "not-encrypted", "invalid-range",
 ]);
 
 function isNativeError(value: unknown): value is NativeError {
@@ -49,7 +50,7 @@ let nextJobId = 0;
  * Aborting `signal` asks the native side to stop (killing any external engine process).
  */
 export async function runNative(
-  command: "compress_pdf" | "convert_word_to_pdf" | "ocr_image",
+  command: "compress_pdf" | "convert_document" | "ocr_image" | "protect_pdf" | "unlock_pdf" | "repair_pdf" | "sign_pdf",
   input: Uint8Array,
   headers: Record<string, string>,
   options: { signal?: AbortSignal; onProgress?: (progress: NativeProgress) => void } = {},
@@ -73,6 +74,52 @@ export async function runNative(
   } finally {
     options.signal?.removeEventListener("abort", onAbort);
     unlisten?.();
+  }
+}
+
+export interface CertificateInfo {
+  subject: string;
+  issuer: string;
+  /** Unix seconds. */
+  validFrom: number;
+  validTo: number;
+  selfSigned: boolean;
+  keyType: string;
+}
+
+/** Reads a .pfx/.p12 file's certificate details (validates the password). */
+export async function getCertificateInfo(p12: Uint8Array, password: string): Promise<CertificateInfo> {
+  try {
+    return await invoke<CertificateInfo>("certificate_info", p12, {
+      headers: { "x-job-id": `cert-${Date.now()}-${nextJobId++}`, "x-p12-password": encodeURIComponent(password) },
+    });
+  } catch (error) {
+    throw toError(error);
+  }
+}
+
+export interface ScannerStatus {
+  supported: boolean;
+  scanners: string[];
+}
+
+export async function getScannerStatus(): Promise<ScannerStatus> {
+  return invoke<ScannerStatus>("scanner_status");
+}
+
+/** Opens the Windows scan dialog; resolves with JPEG bytes. Aborting closes the dialog. */
+export async function scanPage(signal?: AbortSignal): Promise<Uint8Array> {
+  throwIfCancelled(signal);
+  const jobId = `scan-${Date.now()}-${nextJobId++}`;
+  const onAbort = () => void invoke("cancel_job", { jobId }).catch(() => undefined);
+  signal?.addEventListener("abort", onAbort);
+  try {
+    return new Uint8Array(await invoke<ArrayBuffer>("scan_page", { jobId }));
+  } catch (error) {
+    if (signal?.aborted) throw new CancelledError();
+    throw toError(error);
+  } finally {
+    signal?.removeEventListener("abort", onAbort);
   }
 }
 

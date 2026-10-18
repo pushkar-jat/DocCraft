@@ -57,12 +57,10 @@ export function mapPdfJsError(error: unknown, name: string): DocError {
   return new DocError("not-pdf", `"${name}" is damaged or is not a valid PDF file.`, name);
 }
 
-export async function extractText(
-  pdfjs: PdfJsLike,
-  bytes: Uint8Array,
-  name: string,
-  options: { documentParams?: Record<string, unknown>; signal?: AbortSignal; onProgress?: (p: { current: number; total: number }) => void } = {},
-): Promise<ExtractedText> {
+export type ExtractOptions = { documentParams?: Record<string, unknown>; signal?: AbortSignal; onProgress?: (p: { current: number; total: number }) => void };
+
+/** Positioned text fragments for every page, plus the first page's size in points. */
+export async function extractFragments(pdfjs: PdfJsLike, bytes: Uint8Array, name: string, options: ExtractOptions = {}): Promise<{ pages: TextFragment[][]; pageSize: { width: number; height: number } }> {
   // pdf.js transfers (detaches) the buffer it is given, so pass a copy.
   const task = pdfjs.getDocument({ data: bytes.slice(), ...options.documentParams });
   let doc: PdfDocumentLike;
@@ -73,7 +71,7 @@ export async function extractText(
     throw mapPdfJsError(error, name);
   }
   try {
-    const pages: Paragraph[][] = [];
+    const pages: TextFragment[][] = [];
     let pageSize = { width: 595.28, height: 841.89 };
     for (let pageNumber = 1; pageNumber <= doc.numPages; pageNumber++) {
       throwIfCancelled(options.signal);
@@ -84,12 +82,18 @@ export async function extractText(
         pageSize = { width: Math.abs(x1 - x0), height: Math.abs(y1 - y0) };
       }
       const content = await page.getTextContent();
-      pages.push(layoutPage(toFragments(content.items)));
+      pages.push(toFragments(content.items));
     }
-    return { pages, pageSize, characterCount: countCharacters(pages) };
+    return { pages, pageSize };
   } finally {
     await task.destroy().catch(() => undefined);
   }
+}
+
+export async function extractText(pdfjs: PdfJsLike, bytes: Uint8Array, name: string, options: ExtractOptions = {}): Promise<ExtractedText> {
+  const { pages: fragments, pageSize } = await extractFragments(pdfjs, bytes, name, options);
+  const pages = fragments.map(layoutPage);
+  return { pages, pageSize, characterCount: countCharacters(pages) };
 }
 
 /**

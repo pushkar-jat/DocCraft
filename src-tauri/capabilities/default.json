@@ -14,7 +14,14 @@
     "allow-engine-status",
     "allow-cancel-job",
     "allow-compress-pdf",
-    "allow-convert-word-to-pdf",
-    "allow-ocr-image"
+    "allow-convert-document",
+    "allow-ocr-image",
+    "allow-protect-pdf",
+    "allow-unlock-pdf",
+    "allow-repair-pdf",
+    "allow-certificate-info",
+    "allow-sign-pdf",
+    "allow-scanner-status",
+    "allow-scan-page"
   ]
 }

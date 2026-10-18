@@ -15,6 +15,8 @@ export type ErrorCode =
   | "conversion-failed"
   | "timeout"
   | "write-failed"
+  | "wrong-password"
+  | "not-encrypted"
   | "internal";
 
 /** An expected, user-explainable failure. `fileName` is a file name only, never a full path. */

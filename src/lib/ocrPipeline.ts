@@ -59,7 +59,7 @@ export async function ocrPdf(bytes: Uint8Array, name: string, deps: OcrDeps, opt
 
 /** Images -> one searchable PDF (one page per image, in order). */
 export async function ocrImages(
-  images: { name: string; bytes: Uint8Array }[],
+  images: { name: string; bytes: Uint8Array; dpi?: number }[],
   deps: Pick<OcrDeps, "recognize" | "combine">,
   options: Omit<OcrOptions, "dpi"> = {},
 ): Promise<Uint8Array> {
@@ -70,7 +70,7 @@ export async function ocrImages(
   for (const [index, image] of images.entries()) {
     throwIfCancelled(options.signal);
     options.onProgress?.({ stage: "recognizing", current: index + 1, total: images.length });
-    pages.push(await deps.recognize(image.bytes, null, options.signal));
+    pages.push(await deps.recognize(image.bytes, image.dpi ?? null, options.signal));
   }
   throwIfCancelled(options.signal);
   options.onProgress?.({ stage: "assembling", current: images.length, total: images.length });

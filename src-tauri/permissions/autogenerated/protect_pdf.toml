@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-protect-pdf"
+description = "Enables the protect_pdf command without any pre-configured scope."
+commands.allow = ["protect_pdf"]
+
+[[permission]]
+identifier = "deny-protect-pdf"
+description = "Denies the protect_pdf command without any pre-configured scope."
+commands.deny = ["protect_pdf"]

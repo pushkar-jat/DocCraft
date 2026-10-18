@@ -1,39 +1,6 @@
-import type { ReactNode } from "react";
 import { useEngines } from "../state/EnginesContext";
-import {
-  BatchIcon,
-  CompressIcon,
-  ConvertIcon,
-  ExtractIcon,
-  ImageIcon,
-  LockIcon,
-  MergeIcon,
-  ScanIcon,
-  SplitIcon,
-  WordIcon,
-} from "./Icons";
-
-export type ToolId = "merge" | "split" | "extract" | "compress" | "word-to-pdf" | "pdf-to-word" | "images-to-pdf" | "ocr" | "batch";
-
-interface Tool {
-  id: ToolId;
-  title: string;
-  description: string;
-  icon: ReactNode;
-  engine?: "libreOffice" | "tesseract";
-}
-
-const TOOLS: Tool[] = [
-  { id: "merge", title: "Merge PDF", description: "Combine PDFs into one, in the order you choose.", icon: <MergeIcon /> },
-  { id: "split", title: "Split PDF", description: "Split a PDF into several files by page ranges.", icon: <SplitIcon /> },
-  { id: "extract", title: "Extract pages", description: "Copy selected pages into a new PDF.", icon: <ExtractIcon /> },
-  { id: "compress", title: "Compress PDF", description: "Reduce file size with clear quality presets.", icon: <CompressIcon /> },
-  { id: "images-to-pdf", title: "Images to PDF", description: "Turn JPEG and PNG images into one PDF.", icon: <ImageIcon /> },
-  { id: "pdf-to-word", title: "PDF to Word", description: "Editable DOCX from a text PDF (basic layout).", icon: <WordIcon /> },
-  { id: "word-to-pdf", title: "Word to PDF", description: "DOCX, DOC, ODT or RTF to PDF.", icon: <ConvertIcon />, engine: "libreOffice" },
-  { id: "ocr", title: "OCR / searchable PDF", description: "Recognize text in scans and images.", icon: <ScanIcon />, engine: "tesseract" },
-  { id: "batch", title: "Batch processing", description: "Compress or convert many files in one go.", icon: <BatchIcon /> },
-];
+import { CATEGORIES, TOOLS, type ToolId } from "../tools";
+import { LockIcon } from "./Icons";
 
 const ENGINE_NAMES = { libreOffice: "LibreOffice", tesseract: "Tesseract" } as const;
 
@@ -55,35 +22,56 @@ export function Dashboard({ onOpen, mergeCount }: DashboardProps) {
         </p>
       </section>
 
-      <section aria-labelledby="tools-title">
-        <h2 id="tools-title" className="section-title">
-          Tools
-        </h2>
-        <ul className="tool-grid">
-          {TOOLS.map((tool) => {
-            const missing = tool.engine !== undefined && !checking && !(status?.[tool.engine].available ?? false);
-            return (
-              <li key={tool.id}>
-                <button type="button" className="tool-tile" onClick={() => onOpen(tool.id)}>
-                  <span className="tool-icon">{tool.icon}</span>
-                  <span className="tool-body">
-                    <span className="tool-title">
-                      {tool.title}
-                      {tool.id === "merge" && mergeCount > 0 && <span className="badge badge--accent">{mergeCount} selected</span>}
-                    </span>
-                    <span className="tool-description">{tool.description}</span>
-                    {tool.engine && (
-                      <span className={`engine-tag ${missing ? "engine-tag--missing" : ""}`}>
-                        {missing ? `Needs ${ENGINE_NAMES[tool.engine]} (not found) — open for setup` : `Uses ${ENGINE_NAMES[tool.engine]} on this computer`}
+      {CATEGORIES.map((category) => {
+        const tools = TOOLS.filter((tool) => tool.category === category.id);
+        if (tools.length === 0) return null;
+        return (
+          <section key={category.id} aria-labelledby={`cat-${category.id}`}>
+            <h2 id={`cat-${category.id}`} className="section-title">
+              {category.title}
+            </h2>
+            <ul className="tool-grid">
+              {tools.map((tool) => {
+                const missing = tool.engine !== undefined && !checking && !(status?.[tool.engine].available ?? false);
+                if (tool.unavailable) {
+                  return (
+                    <li key={tool.id}>
+                      <div className="tool-tile tool-tile--unavailable" aria-label={`${tool.title} — ${tool.unavailable}`}>
+                        <span className="tool-icon tool-icon--muted">{tool.icon}</span>
+                        <span className="tool-body">
+                          <span className="tool-title">
+                            {tool.title} <span className="badge">Not available yet</span>
+                          </span>
+                          <span className="tool-description">{tool.description}</span>
+                        </span>
+                      </div>
+                    </li>
+                  );
+                }
+                return (
+                  <li key={tool.id}>
+                    <button type="button" className="tool-tile" onClick={() => onOpen(tool.id)}>
+                      <span className="tool-icon">{tool.icon}</span>
+                      <span className="tool-body">
+                        <span className="tool-title">
+                          {tool.title}
+                          {tool.id === "merge" && mergeCount > 0 && <span className="badge badge--accent">{mergeCount} selected</span>}
+                        </span>
+                        <span className="tool-description">{tool.description}</span>
+                        {tool.engine && (
+                          <span className={`engine-tag ${missing ? "engine-tag--missing" : ""}`}>
+                            {missing ? `Needs ${ENGINE_NAMES[tool.engine]} (not found)` : `Uses ${ENGINE_NAMES[tool.engine]}`}
+                          </span>
+                        )}
                       </span>
-                    )}
-                  </span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      </section>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        );
+      })}
     </div>
   );
 }
